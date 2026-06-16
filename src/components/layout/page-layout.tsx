@@ -16,26 +16,13 @@ interface PageHeaderProps {
   className?: string;
 }
 
-export function PageHeader({
-  title,
-  description,
-  actions,
-  meta,
-  className,
-}: PageHeaderProps) {
+export function PageHeader({ title, description, actions, meta, className }: PageHeaderProps) {
   return (
-    <header
-      className={cn(
-        "flex flex-wrap items-start justify-between gap-4 pb-2",
-        className,
-      )}
-    >
+    <header className={cn("flex flex-wrap items-start justify-between gap-4 pb-2", className)}>
       <div className="space-y-2">
         <h1 className="text-h1">{title}</h1>
         {description && (
-          <p className="text-body-lg text-muted-foreground max-w-2xl">
-            {description}
-          </p>
+          <p className="text-body-lg text-muted-foreground max-w-2xl">{description}</p>
         )}
         {meta && <div className="pt-1">{meta}</div>}
       </div>
@@ -65,9 +52,7 @@ export function PageSection({
         <div className="flex items-end justify-between gap-3">
           <div className="space-y-1">
             {title && <h2 className="text-h3">{title}</h2>}
-            {description && (
-              <p className="text-body text-muted-foreground">{description}</p>
-            )}
+            {description && <p className="text-body text-muted-foreground">{description}</p>}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>

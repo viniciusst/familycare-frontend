@@ -17,15 +17,13 @@ import type { ProblemDetails } from "@/types/api";
 const BACKEND_URL = process.env.BACKEND_API_URL;
 
 if (!BACKEND_URL) {
-  throw new Error(
-    "BACKEND_API_URL is not set. Copy .env.example to .env.local.",
-  );
+  throw new Error("BACKEND_API_URL is not set. Copy .env.example to .env.local.");
 }
 
 export class BackendError extends Error {
   constructor(
     public readonly status: number,
-    public readonly problem: ProblemDetails,
+    public readonly problem: ProblemDetails
   ) {
     super(problem.title || `Backend returned ${status}`);
     this.name = "BackendError";
@@ -46,7 +44,7 @@ export interface BackendRequestOptions {
  */
 export async function callBackend<TResponse>(
   path: string,
-  options: BackendRequestOptions = {},
+  options: BackendRequestOptions = {}
 ): Promise<TResponse> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -102,7 +100,5 @@ export function unwrapId(input: unknown): string {
   ) {
     return (input as { value: string }).value;
   }
-  throw new Error(
-    `Cannot unwrap strongly-typed ID from: ${JSON.stringify(input)}`,
-  );
+  throw new Error(`Cannot unwrap strongly-typed ID from: ${JSON.stringify(input)}`);
 }

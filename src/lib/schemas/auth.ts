@@ -29,10 +29,7 @@ export const registerSchema = z
       .max(128, "Password must be 128 characters or fewer.")
       .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
       .regex(/[0-9]/, "Password must contain at least one digit.")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Password must contain at least one special character."
-      ),
+      .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character."),
     confirmPassword: z.string(),
     preferredLanguage: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   })

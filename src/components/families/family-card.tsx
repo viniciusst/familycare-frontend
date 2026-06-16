@@ -3,13 +3,7 @@
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMe } from "@/hooks/use-me";
 import type { FamilySummary } from "@/types/api";
 
@@ -22,11 +16,8 @@ export function FamilyCard({ family }: FamilyCardProps) {
   const isOwner = me?.id === family.ownerUserId;
 
   return (
-    <Link
-      href={`/families/${family.id}`}
-      className="block transition-all hover:scale-[1.02]"
-    >
-      <Card className="h-full hover:shadow-md transition-shadow">
+    <Link href={`/families/${family.id}`} className="block transition-all hover:scale-[1.02]">
+      <Card className="h-full transition-shadow hover:shadow-md">
         <CardHeader>
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="line-clamp-1">{family.name}</CardTitle>
@@ -40,10 +31,9 @@ export function FamilyCard({ family }: FamilyCardProps) {
         </CardHeader>
         {family.memberCount !== undefined && (
           <CardContent>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Users className="h-4 w-4" />
-              {family.memberCount}{" "}
-              {family.memberCount === 1 ? "member" : "members"}
+              {family.memberCount} {family.memberCount === 1 ? "member" : "members"}
             </div>
           </CardContent>
         )}

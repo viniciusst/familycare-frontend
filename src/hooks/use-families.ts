@@ -2,10 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/api/client";
-import type {
-  CreateFamilyInput,
-  RenameFamilyInput,
-} from "@/lib/schemas/family";
+import type { CreateFamilyInput, RenameFamilyInput } from "@/lib/schemas/family";
 import type { FamilyDetail, FamilySummary, Role } from "@/types/api";
 
 export const familiesKey = ["families"] as const;
@@ -37,9 +34,7 @@ export function useFamily(id: string) {
 export function useCreateFamily() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (
-      input: CreateFamilyInput,
-    ): Promise<FamilySummary | null> => {
+    mutationFn: async (input: CreateFamilyInput): Promise<FamilySummary | null> => {
       try {
         // Try to parse the response normally.
         const result = await clientFetch<FamilySummary>("/api/families", {
@@ -51,9 +46,7 @@ export function useCreateFamily() {
         // If the proxy returns 500 because it couldn't normalize the response,
         // the family was likely created anyway. Refetch and find it by name.
         await queryClient.invalidateQueries({ queryKey: familiesKey });
-        const data = queryClient.getQueryData<{ items: FamilySummary[] }>(
-          familiesKey,
-        );
+        const data = queryClient.getQueryData<{ items: FamilySummary[] }>(familiesKey);
         const created = data?.items
           .filter((f) => f.name === input.name)
           // pick the most recently created

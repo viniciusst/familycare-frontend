@@ -32,10 +32,7 @@ export const acceptInvitationSchema = z.object({
   birthDate: z
     .string()
     .optional()
-    .refine(
-      (val) => !val || !Number.isNaN(Date.parse(val)),
-      "Invalid birth date."
-    ),
+    .refine((val) => !val || !Number.isNaN(Date.parse(val)), "Invalid birth date."),
 });
 
 export type AcceptInvitationInput = z.infer<typeof acceptInvitationSchema>;

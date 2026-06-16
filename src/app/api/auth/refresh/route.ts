@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { BackendError, callBackend, unwrapId } from "@/lib/api/backend";
-import {
-  clearSessionCookies,
-  getRefreshToken,
-  setSessionCookies,
-} from "@/lib/auth/session";
+import { clearSessionCookies, getRefreshToken, setSessionCookies } from "@/lib/auth/session";
 import type { AuthTokens } from "@/types/api";
 
 /**
@@ -21,7 +17,7 @@ export async function POST() {
   if (!refreshToken) {
     return NextResponse.json(
       { type: "about:blank", title: "No refresh token", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -51,7 +47,7 @@ export async function POST() {
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

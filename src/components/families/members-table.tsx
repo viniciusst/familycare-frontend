@@ -35,19 +35,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  useChangeMemberRole,
-  useRemoveMember,
-  useTransferOwnership,
-} from "@/hooks/use-families";
+import { useChangeMemberRole, useRemoveMember, useTransferOwnership } from "@/hooks/use-families";
 import { useMe } from "@/hooks/use-me";
 import { ApiError } from "@/lib/api/client";
-import {
-  RELATIONSHIP_LABELS,
-  ROLE_LABELS,
-  type FamilyMember,
-  type Role,
-} from "@/types/api";
+import { RELATIONSHIP_LABELS, ROLE_LABELS, type FamilyMember, type Role } from "@/types/api";
 
 interface MembersTableProps {
   familyId: string;
@@ -95,13 +86,7 @@ interface MemberRowProps {
   isMe: boolean;
 }
 
-function MemberRow({
-  familyId,
-  member,
-  canManage,
-  isOwner,
-  isMe,
-}: MemberRowProps) {
+function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProps) {
   const [removeOpen, setRemoveOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
 
@@ -117,11 +102,7 @@ function MemberRow({
       await changeRole.mutateAsync({ memberId: member.id, role });
       toast.success(`Role changed to ${ROLE_LABELS[role]}.`);
     } catch (error) {
-      toast.error(
-        error instanceof ApiError
-          ? error.problem.title
-          : "Could not change role.",
-      );
+      toast.error(error instanceof ApiError ? error.problem.title : "Could not change role.");
     }
   };
 
@@ -131,11 +112,7 @@ function MemberRow({
       toast.success("Member removed.");
       setRemoveOpen(false);
     } catch (error) {
-      toast.error(
-        error instanceof ApiError
-          ? error.problem.title
-          : "Could not remove member.",
-      );
+      toast.error(error instanceof ApiError ? error.problem.title : "Could not remove member.");
     }
   };
 
@@ -146,9 +123,7 @@ function MemberRow({
       setTransferOpen(false);
     } catch (error) {
       toast.error(
-        error instanceof ApiError
-          ? error.problem.title
-          : "Could not transfer ownership.",
+        error instanceof ApiError ? error.problem.title : "Could not transfer ownership."
       );
     }
   };
@@ -158,24 +133,14 @@ function MemberRow({
       <TableCell>
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarFallback>
-              {member.displayName.charAt(0).toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback>{member.displayName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium">
               {member.displayName}
-              {isMe && (
-                <span className="ml-2 text-xs text-muted-foreground">
-                  (you)
-                </span>
-              )}
+              {isMe && <span className="text-muted-foreground ml-2 text-xs">(you)</span>}
             </div>
-            {member.email && (
-              <div className="text-xs text-muted-foreground">
-                {member.email}
-              </div>
-            )}
+            {member.email && <div className="text-muted-foreground text-xs">{member.email}</div>}
           </div>
         </div>
       </TableCell>
@@ -185,10 +150,10 @@ function MemberRow({
           {ROLE_LABELS[member.role]}
         </Badge>
       </TableCell>
-      <TableCell className="text-sm text-muted-foreground">
+      <TableCell className="text-muted-foreground text-sm">
         {RELATIONSHIP_LABELS[member.relationship]}
       </TableCell>
-      <TableCell className="text-sm text-muted-foreground">
+      <TableCell className="text-muted-foreground text-sm">
         {new Date(member.joinedAt).toLocaleDateString()}
       </TableCell>
       <TableCell>
@@ -248,9 +213,8 @@ function MemberRow({
             <AlertDialogHeader>
               <AlertDialogTitle>Remove {member.displayName}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This member will lose access to the family. Their medical data
-                within this family will also be removed. This action cannot be
-                undone.
+                This member will lose access to the family. Their medical data within this family
+                will also be removed. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -269,20 +233,15 @@ function MemberRow({
         <AlertDialog open={transferOpen} onOpenChange={setTransferOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                Transfer ownership to {member.displayName}?
-              </AlertDialogTitle>
+              <AlertDialogTitle>Transfer ownership to {member.displayName}?</AlertDialogTitle>
               <AlertDialogDescription>
-                {member.displayName} will become the new owner. You will be
-                demoted to Admin. This action cannot be undone — only the new
-                owner can transfer it back.
+                {member.displayName} will become the new owner. You will be demoted to Admin. This
+                action cannot be undone — only the new owner can transfer it back.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleTransfer}>
-                Transfer ownership
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleTransfer}>Transfer ownership</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

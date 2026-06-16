@@ -1,10 +1,5 @@
 import { unwrapId } from "./backend";
-import type {
-  FamilyDetail,
-  FamilyMember,
-  FamilySummary,
-  Invitation,
-} from "@/types/api";
+import type { FamilyDetail, FamilyMember, FamilySummary, Invitation } from "@/types/api";
 
 /**
  * Backend response normalizers. Each raw response needs to be passed

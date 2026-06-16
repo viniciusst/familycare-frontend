@@ -8,15 +8,12 @@ import { getAccessToken } from "@/lib/auth/session";
  *
  * Sends an invitation by email. Owner/Admin only.
  */
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -28,14 +25,14 @@ export async function POST(
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
   try {
     const raw = await callBackend<Parameters<typeof normalizeInvitation>[0]>(
       `/api/v1/families/${id}/invitations`,
-      { method: "POST", body, accessToken },
+      { method: "POST", body, accessToken }
     );
     return NextResponse.json(normalizeInvitation(raw), { status: 201 });
   } catch (error) {
@@ -44,7 +41,7 @@ export async function POST(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

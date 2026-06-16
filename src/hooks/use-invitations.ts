@@ -3,10 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { familyKey } from "@/hooks/use-families";
 import { clientFetch } from "@/lib/api/client";
-import type {
-  AcceptInvitationInput,
-  InviteMemberInput,
-} from "@/lib/schemas/invitation";
+import type { AcceptInvitationInput, InviteMemberInput } from "@/lib/schemas/invitation";
 import type { Invitation } from "@/types/api";
 
 /**
@@ -48,13 +45,7 @@ export function useRevokeInvitation(familyId: string) {
 export function useAcceptInvitation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      invitationId,
-      input,
-    }: {
-      invitationId: string;
-      input: AcceptInvitationInput;
-    }) =>
+    mutationFn: ({ invitationId, input }: { invitationId: string; input: AcceptInvitationInput }) =>
       clientFetch(`/api/invitations/${invitationId}/accept`, {
         method: "POST",
         body: input,

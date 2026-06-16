@@ -8,15 +8,12 @@ import { getAccessToken } from "@/lib/auth/session";
  * Transfers family ownership to another member. Only the current owner
  * can call this. The previous owner becomes an Admin.
  */
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -28,7 +25,7 @@ export async function PUT(
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -45,7 +42,7 @@ export async function PUT(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -23,10 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useCreateFamily } from "@/hooks/use-families";
 import { ApiError } from "@/lib/api/client";
-import {
-  createFamilySchema,
-  type CreateFamilyInput,
-} from "@/lib/schemas/family";
+import { createFamilySchema, type CreateFamilyInput } from "@/lib/schemas/family";
 
 interface CreateFamilyDialogProps {
   trigger?: React.ReactNode;
@@ -48,9 +45,7 @@ export function CreateFamilyDialog({ trigger }: CreateFamilyDialogProps) {
   const onSubmit = async (data: CreateFamilyInput) => {
     try {
       const family = await createFamily.mutateAsync(data);
-      toast.success(
-        family ? `Family "${family.name}" created.` : "Family created.",
-      );
+      toast.success(family ? `Family "${family.name}" created.` : "Family created.");
       reset();
       setOpen(false);
       if (family) {
@@ -64,10 +59,7 @@ export function CreateFamilyDialog({ trigger }: CreateFamilyDialogProps) {
         }
       } else {
         setError("root", {
-          message:
-            error instanceof ApiError
-              ? error.problem.title
-              : "Something went wrong.",
+          message: error instanceof ApiError ? error.problem.title : "Something went wrong.",
         });
       }
     }
@@ -81,15 +73,9 @@ export function CreateFamilyDialog({ trigger }: CreateFamilyDialogProps) {
         setOpen(next);
       }}
     >
-      <DialogTrigger asChild>
-        {trigger ?? <Button>Create family</Button>}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger ?? <Button>Create family</Button>}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-h3">Create a new family</DialogTitle>
             <DialogDescription className="text-body">

@@ -8,15 +8,12 @@ import { getAccessToken } from "@/lib/auth/session";
  * Transfers ownership to another member. Only current owner can call this.
  * The previous owner is demoted to Admin.
  */
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -28,7 +25,7 @@ export async function POST(
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -45,7 +42,7 @@ export async function POST(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

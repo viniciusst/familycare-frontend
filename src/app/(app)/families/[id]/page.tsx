@@ -15,11 +15,7 @@ import { useFamily } from "@/hooks/use-families";
 import { useMyRole } from "@/hooks/use-my-role";
 import { ROLE_LABELS } from "@/types/api";
 
-export default function FamilyDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function FamilyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: family, isLoading, isError } = useFamily(id);
   const myRole = useMyRole(family);
@@ -53,21 +49,16 @@ export default function FamilyDetailPage({
       <PageHeader
         title={family.name}
         meta={
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
             {myRole !== null && (
-              <Badge variant={isOwner ? "default" : "secondary"}>
-                You: {ROLE_LABELS[myRole]}
-              </Badge>
+              <Badge variant={isOwner ? "default" : "secondary"}>You: {ROLE_LABELS[myRole]}</Badge>
             )}
             <span className="flex items-center gap-1.5">
               <Users className="h-4 w-4" />
-              {family.members.length}{" "}
-              {family.members.length === 1 ? "member" : "members"}
+              {family.members.length} {family.members.length === 1 ? "member" : "members"}
             </span>
             <span>·</span>
-            <span>
-              Created {new Date(family.createdAt).toLocaleDateString()}
-            </span>
+            <span>Created {new Date(family.createdAt).toLocaleDateString()}</span>
           </div>
         }
         actions={canManage ? <InviteMemberDialog familyId={family.id} /> : null}
@@ -80,13 +71,8 @@ export default function FamilyDetailPage({
         instead of stacking vertically. Forcing block fixes it.
       */}
       <Tabs defaultValue="members" className="block w-full">
-        <div className="border-b w-full">
-          <TabsList
-            className="
-              h-auto bg-transparent p-0 gap-2 rounded-none
-              flex justify-start w-fit
-            "
-          >
+        <div className="w-full border-b">
+          <TabsList className="flex h-auto w-fit justify-start gap-2 rounded-none bg-transparent p-0">
             <TabsTrigger value="members" className={tabTriggerClass}>
               <Users className="h-4 w-4" />
               Members
@@ -101,11 +87,7 @@ export default function FamilyDetailPage({
         </div>
 
         <TabsContent value="members" className="mt-6 w-full">
-          <MembersTable
-            familyId={family.id}
-            members={family.members}
-            myRole={myRole}
-          />
+          <MembersTable familyId={family.id} members={family.members} myRole={myRole} />
         </TabsContent>
 
         {canManage && (

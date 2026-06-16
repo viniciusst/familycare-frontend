@@ -8,15 +8,12 @@ import { getAccessToken } from "@/lib/auth/session";
  *
  * Returns the family with all its members.
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -25,7 +22,7 @@ export async function GET(
   try {
     const raw = await callBackend<Parameters<typeof normalizeFamilyDetail>[0]>(
       `/api/v1/families/${id}`,
-      { accessToken },
+      { accessToken }
     );
     return NextResponse.json(normalizeFamilyDetail(raw));
   } catch (error) {
@@ -34,7 +31,7 @@ export async function GET(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -45,15 +42,12 @@ export async function GET(
  * Renames the family. Owner/Admin only (enforced by backend).
  * Backend expects PATCH on /families/{id} with { name: "..." }.
  */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -65,7 +59,7 @@ export async function PATCH(
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -82,7 +76,7 @@ export async function PATCH(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

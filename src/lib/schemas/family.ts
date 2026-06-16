@@ -18,10 +18,7 @@ export const createFamilySchema = z.object({
   ownerBirthDate: z
     .string()
     .optional()
-    .refine(
-      (val) => !val || !Number.isNaN(Date.parse(val)),
-      "Invalid birth date.",
-    ),
+    .refine((val) => !val || !Number.isNaN(Date.parse(val)), "Invalid birth date."),
 });
 
 export type CreateFamilyInput = z.infer<typeof createFamilySchema>;

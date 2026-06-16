@@ -18,7 +18,7 @@ export async function GET() {
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -35,7 +35,7 @@ export async function GET() {
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -78,22 +78,16 @@ export async function POST(request: Request) {
     });
 
     // Log the actual shape so we can see it in `npm run dev` console.
-    console.log(
-      "[POST /families] backend response shape:",
-      JSON.stringify(raw),
-    );
+    console.log("[POST /families] backend response shape:", JSON.stringify(raw));
 
     // Try to normalize, but tolerate failure.
     try {
       const normalized = normalizeFamilySummary(
-        raw as Parameters<typeof normalizeFamilySummary>[0],
+        raw as Parameters<typeof normalizeFamilySummary>[0]
       );
       return NextResponse.json(normalized, { status: 201 });
     } catch (normalizeError) {
-      console.warn(
-        "[POST /families] could not normalize response, returning raw:",
-        normalizeError,
-      );
+      console.warn("[POST /families] could not normalize response, returning raw:", normalizeError);
       // Best-effort: return whatever the backend gave us with status 201.
       // The client's list will refetch and pick up the new family.
       return NextResponse.json(raw, { status: 201 });
@@ -104,7 +98,7 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

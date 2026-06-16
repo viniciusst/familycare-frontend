@@ -22,9 +22,7 @@ export function useMyRole(family: FamilyDetail | undefined): Role | null {
  * Derives myRole for a FamilySummary (which doesn't include members).
  * Falls back to checking if the current user is the owner.
  */
-export function useMyRoleFromSummary(
-  family: FamilySummary | undefined,
-): Role | null {
+export function useMyRoleFromSummary(family: FamilySummary | undefined): Role | null {
   const { data: me } = useMe();
   if (!family || !me) return null;
   if (family.ownerUserId === me.id) return 1; // Owner

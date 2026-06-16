@@ -5,25 +5,12 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  FormField,
-  FormFooter,
-  FormRootError,
-} from "@/components/forms/form-primitives";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField, FormFooter, FormRootError } from "@/components/forms/form-primitives";
 import { Input } from "@/components/ui/input";
 import { useRenameFamily } from "@/hooks/use-families";
 import { ApiError } from "@/lib/api/client";
-import {
-  renameFamilySchema,
-  type RenameFamilyInput,
-} from "@/lib/schemas/family";
+import { renameFamilySchema, type RenameFamilyInput } from "@/lib/schemas/family";
 
 interface FamilySettingsProps {
   familyId: string;
@@ -51,10 +38,7 @@ export function FamilySettings({ familyId, currentName }: FamilySettingsProps) {
       router.push("/families");
     } catch (error) {
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.problem.title
-            : "Could not rename family.",
+        message: error instanceof ApiError ? error.problem.title : "Could not rename family.",
       });
     }
   };
@@ -66,17 +50,10 @@ export function FamilySettings({ familyId, currentName }: FamilySettingsProps) {
             feel cramped against the description. */}
         <CardHeader className="space-y-2 pb-6">
           <CardTitle className="text-h4">Family name</CardTitle>
-          <CardDescription className="text-body">
-            The name visible to all members.
-          </CardDescription>
+          <CardDescription className="text-body">The name visible to all members.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <FormField
-            htmlFor="newName"
-            label="Name"
-            error={errors.newName?.message}
-            required
-          >
+          <FormField htmlFor="newName" label="Name" error={errors.newName?.message} required>
             <Input
               id="newName"
               className="h-11"

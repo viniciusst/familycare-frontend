@@ -49,8 +49,8 @@ export function UserMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">My account</p>
-            <p className="text-xs leading-none text-muted-foreground truncate">
+            <p className="text-sm leading-none font-medium">My account</p>
+            <p className="text-muted-foreground truncate text-xs leading-none">
               {me?.email ?? "Loading..."}
             </p>
           </div>
@@ -65,7 +65,7 @@ export function UserMenu() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleLogout}
-          className="cursor-pointer text-destructive focus:text-destructive"
+          className="text-destructive focus:text-destructive cursor-pointer"
         >
           <LogOut className="mr-2 h-4 w-4" />
           Log out

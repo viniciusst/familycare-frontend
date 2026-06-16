@@ -154,7 +154,7 @@
     @apply text-sm leading-relaxed;
   }
   .text-caption {
-    @apply text-xs uppercase tracking-wider font-medium;
+    @apply text-xs font-medium tracking-wider uppercase;
   }
 
   /* Numerical alignment for tabular data */

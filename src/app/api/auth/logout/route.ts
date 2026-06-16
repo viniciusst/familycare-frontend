@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { BackendError, callBackend } from "@/lib/api/backend";
-import {
-  clearSessionCookies,
-  getAccessToken,
-  getRefreshToken,
-} from "@/lib/auth/session";
+import { clearSessionCookies, getAccessToken, getRefreshToken } from "@/lib/auth/session";
 
 /**
  * POST /api/auth/logout

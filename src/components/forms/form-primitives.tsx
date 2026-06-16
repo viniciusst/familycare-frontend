@@ -14,20 +14,13 @@ interface FormSectionProps {
   className?: string;
 }
 
-export function FormSection({
-  title,
-  description,
-  children,
-  className,
-}: FormSectionProps) {
+export function FormSection({ title, description, children, className }: FormSectionProps) {
   return (
     <div className={cn("space-y-4", className)}>
       {(title || description) && (
         <div className="space-y-1">
           {title && <h3 className="text-h4">{title}</h3>}
-          {description && (
-            <p className="text-body text-muted-foreground">{description}</p>
-          )}
+          {description && <p className="text-body text-muted-foreground">{description}</p>}
         </div>
       )}
       <div className="space-y-5">{children}</div>
@@ -63,10 +56,7 @@ export function FormField({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-baseline justify-between gap-2">
-        <label
-          htmlFor={htmlFor}
-          className="text-sm font-medium leading-none cursor-pointer"
-        >
+        <label htmlFor={htmlFor} className="cursor-pointer text-sm leading-none font-medium">
           {label}
           {required && (
             <span className="text-destructive ml-0.5" aria-hidden>
@@ -74,22 +64,15 @@ export function FormField({
             </span>
           )}
         </label>
-        {badge && (
-          <span className="text-xs text-muted-foreground">{badge}</span>
-        )}
+        {badge && <span className="text-muted-foreground text-xs">{badge}</span>}
       </div>
       {children}
       {error && (
-        <p
-          className="text-xs text-destructive flex items-start gap-1 leading-snug"
-          role="alert"
-        >
+        <p className="text-destructive flex items-start gap-1 text-xs leading-snug" role="alert">
           {error}
         </p>
       )}
-      {!error && hint && (
-        <p className="text-xs text-muted-foreground leading-snug">{hint}</p>
-      )}
+      {!error && hint && <p className="text-muted-foreground text-xs leading-snug">{hint}</p>}
     </div>
   );
 }
@@ -101,9 +84,7 @@ interface FormFooterProps {
 
 export function FormFooter({ children, className }: FormFooterProps) {
   return (
-    <div className={cn("flex items-center justify-end gap-3 pt-2", className)}>
-      {children}
-    </div>
+    <div className={cn("flex items-center justify-end gap-3 pt-2", className)}>{children}</div>
   );
 }
 
@@ -116,7 +97,7 @@ export function FormRootError({ message }: FormRootErrorProps) {
   return (
     <div
       role="alert"
-      className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+      className="border-destructive/30 bg-destructive/5 text-destructive rounded-md border px-3 py-2 text-sm"
     >
       {message}
     </div>

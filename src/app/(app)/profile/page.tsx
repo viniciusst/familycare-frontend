@@ -39,14 +39,8 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
           <Field label="Email" value={me.email} />
-          <Field
-            label="Preferred language"
-            value={languageNames[me.preferredLanguage] ?? "—"}
-          />
-          <Field
-            label="Member since"
-            value={new Date(me.createdAt).toLocaleDateString()}
-          />
+          <Field label="Preferred language" value={languageNames[me.preferredLanguage] ?? "—"} />
+          <Field label="Member since" value={new Date(me.createdAt).toLocaleDateString()} />
         </CardContent>
       </Card>
     </>

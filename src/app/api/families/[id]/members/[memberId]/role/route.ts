@@ -10,13 +10,13 @@ import { getAccessToken } from "@/lib/auth/session";
  */
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string; memberId: string }> },
+  { params }: { params: Promise<{ id: string; memberId: string }> }
 ) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -28,7 +28,7 @@ export async function PATCH(
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -45,7 +45,7 @@ export async function PATCH(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

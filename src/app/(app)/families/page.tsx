@@ -38,20 +38,17 @@ export default function FamiliesPage() {
         </div>
       )}
 
-      {isError && (
-        <p className="text-destructive">Could not load your families.</p>
-      )}
+      {isError && <p className="text-destructive">Could not load your families.</p>}
 
       {families && families.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed py-20 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <Users className="h-7 w-7 text-muted-foreground" />
+          <div className="bg-muted rounded-full p-4">
+            <Users className="text-muted-foreground h-7 w-7" />
           </div>
-          <div className="space-y-1.5 max-w-sm">
+          <div className="max-w-sm space-y-1.5">
             <p className="text-h4">No families yet</p>
             <p className="text-body text-muted-foreground">
-              Create your first family to start tracking health and well-being
-              together.
+              Create your first family to start tracking health and well-being together.
             </p>
           </div>
           <CreateFamilyDialog

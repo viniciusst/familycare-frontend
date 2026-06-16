@@ -30,10 +30,7 @@ import {
 } from "@/components/ui/select";
 import { useInviteMember } from "@/hooks/use-invitations";
 import { ApiError } from "@/lib/api/client";
-import {
-  inviteMemberSchema,
-  type InviteMemberInput,
-} from "@/lib/schemas/invitation";
+import { inviteMemberSchema, type InviteMemberInput } from "@/lib/schemas/invitation";
 
 interface InviteMemberDialogProps {
   familyId: string;
@@ -108,18 +105,13 @@ export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-h3">Invite a family member</DialogTitle>
             <DialogDescription className="text-body">
-              They&apos;ll receive an invitation. Once accepted, they can manage
-              their own health information.
+              They&apos;ll receive an invitation. Once accepted, they can manage their own health
+              information.
             </DialogDescription>
           </DialogHeader>
 
           <FormSection>
-            <FormField
-              htmlFor="email"
-              label="Email"
-              error={errors.email?.message}
-              required
-            >
+            <FormField htmlFor="email" label="Email" error={errors.email?.message} required>
               <Input
                 id="email"
                 type="email"
@@ -150,18 +142,11 @@ export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
                 </Select>
               </FormField>
 
-              <FormField
-                htmlFor="relationship"
-                label="Relationship"
-                hint="How they relate to you"
-              >
+              <FormField htmlFor="relationship" label="Relationship" hint="How they relate to you">
                 <Select
                   value={String(relationship)}
                   onValueChange={(val) =>
-                    setValue(
-                      "relationship",
-                      Number(val) as InviteMemberInput["relationship"]
-                    )
+                    setValue("relationship", Number(val) as InviteMemberInput["relationship"])
                   }
                 >
                   <SelectTrigger id="relationship" className="h-11">

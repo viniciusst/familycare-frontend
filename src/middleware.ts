@@ -16,9 +16,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasAccessToken = request.cookies.has("fc_access");
 
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route),
-  );
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 
   if (!hasAccessToken && !isPublicRoute) {
     const loginUrl = new URL("/login", request.url);

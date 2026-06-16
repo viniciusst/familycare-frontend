@@ -87,12 +87,7 @@ export function RegisterForm() {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          <FormField
-            htmlFor="email"
-            label="Email"
-            error={errors.email?.message}
-            required
-          >
+          <FormField htmlFor="email" label="Email" error={errors.email?.message} required>
             <Input
               id="email"
               type="email"
@@ -143,10 +138,7 @@ export function RegisterForm() {
             <Select
               value={String(preferredLanguage)}
               onValueChange={(val) =>
-                setValue(
-                  "preferredLanguage",
-                  Number(val) as RegisterInput["preferredLanguage"]
-                )
+                setValue("preferredLanguage", Number(val) as RegisterInput["preferredLanguage"])
               }
             >
               <SelectTrigger id="preferredLanguage" className="h-11">
@@ -171,11 +163,11 @@ export function RegisterForm() {
           >
             {isSubmitting ? "Creating account..." : "Create account"}
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-primary underline-offset-4 hover:underline"
+              className="text-primary font-medium underline-offset-4 hover:underline"
             >
               Sign in
             </Link>

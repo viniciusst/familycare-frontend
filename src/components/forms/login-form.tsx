@@ -63,12 +63,7 @@ export function LoginForm() {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          <FormField
-            htmlFor="email"
-            label="Email"
-            error={errors.email?.message}
-            required
-          >
+          <FormField htmlFor="email" label="Email" error={errors.email?.message} required>
             <Input
               id="email"
               type="email"
@@ -80,12 +75,7 @@ export function LoginForm() {
             />
           </FormField>
 
-          <FormField
-            htmlFor="password"
-            label="Password"
-            error={errors.password?.message}
-            required
-          >
+          <FormField htmlFor="password" label="Password" error={errors.password?.message} required>
             <Input
               id="password"
               type="password"
@@ -103,16 +93,16 @@ export function LoginForm() {
         <CardFooter className="flex flex-col gap-4 pt-2">
           <Button
             type="submit"
-            className="w-full h-11 text-base font-medium"
+            className="h-11 w-full text-base font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Signing in..." : "Sign in"}
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-medium text-primary hover:underline underline-offset-4"
+              className="text-primary font-medium underline-offset-4 hover:underline"
             >
               Create one
             </Link>

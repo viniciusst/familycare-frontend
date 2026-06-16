@@ -10,13 +10,13 @@ import { getAccessToken } from "@/lib/auth/session";
  */
 export async function DELETE(
   _request: Request,
-  { params }: { params: Promise<{ id: string; memberId: string }> },
+  { params }: { params: Promise<{ id: string; memberId: string }> }
 ) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 },
+      { status: 401 }
     );
   }
 
@@ -34,7 +34,7 @@ export async function DELETE(
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

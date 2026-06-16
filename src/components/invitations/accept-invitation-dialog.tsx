@@ -23,10 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAcceptInvitation } from "@/hooks/use-invitations";
 import { ApiError } from "@/lib/api/client";
-import {
-  acceptInvitationSchema,
-  type AcceptInvitationInput,
-} from "@/lib/schemas/invitation";
+import { acceptInvitationSchema, type AcceptInvitationInput } from "@/lib/schemas/invitation";
 
 interface AcceptInvitationDialogProps {
   invitationId: string;
@@ -64,10 +61,7 @@ export function AcceptInvitationDialog({
       router.push(`/families/${familyId}`);
     } catch (error) {
       setError("root", {
-        message:
-          error instanceof ApiError
-            ? error.problem.title
-            : "Could not accept invitation.",
+        message: error instanceof ApiError ? error.problem.title : "Could not accept invitation.",
       });
     }
   };
@@ -80,15 +74,9 @@ export function AcceptInvitationDialog({
         setOpen(next);
       }}
     >
-      <DialogTrigger asChild>
-        {trigger ?? <Button>Accept</Button>}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger ?? <Button>Accept</Button>}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          className="space-y-6"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-h3">Join {familyName}</DialogTitle>
             <DialogDescription className="text-body">
