@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
-import { BackendError, callBackend, unwrapId } from "@/lib/api/backend";
-import { registerSchema } from "@/lib/schemas/auth";
+import { BackendError, callBackend } from "@/lib/api/backend";
 
 /**
  * POST /api/auth/register
  *
- * Validates client-side fields, forwards to backend. We do NOT auto-login
- * after register — the user lands on /login to log in explicitly. This is
- * deliberate: a confirmation step is a good place to add email verification
- * later without changing the flow.
+ * Proxies registration to the backend. The backend response includes
+ * tokens, but we don't store them — registration just creates the
+ * account. The user must log in afterwards.
  */
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,32 +19,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = registerSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        type: "about:blank",
-        title: "Validation failed",
-        status: 400,
-        errors: parsed.error.flatten().fieldErrors,
-      },
-      { status: 400 }
-    );
-  }
-
-  // Strip confirmPassword before forwarding — backend doesn't know about it.
-  const { confirmPassword: _ignore, ...payload } = parsed.data;
-
   try {
-    const result = await callBackend<{ userId: unknown; email: string }>(
-      "/api/v1/auth/register",
-      { method: "POST", body: payload }
-    );
-
-    return NextResponse.json(
-      { userId: unwrapId(result.userId), email: result.email },
-      { status: 201 }
-    );
+    // Call backend, ignore the returned tokens — user logs in next.
+    await callBackend("/api/v1/auth/register", { method: "POST", body });
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     if (error instanceof BackendError) {
       return NextResponse.json(error.problem, { status: error.status });

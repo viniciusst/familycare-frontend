@@ -14,8 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { FormField, FormRootError } from "@/components/forms/form-primitives";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ApiError, clientFetch } from "@/lib/api/client";
 import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
 
@@ -24,12 +31,21 @@ export function RegisterForm() {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { preferredLanguage: 2 },
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      preferredLanguage: 2,
+    },
   });
+
+  const preferredLanguage = watch("preferredLanguage");
 
   const onSubmit = async (data: RegisterInput) => {
     try {
@@ -43,7 +59,6 @@ export function RegisterForm() {
             message: "An account with this email already exists.",
           });
         } else if (error.problem.errors) {
-          // Map backend per-field errors to react-hook-form
           for (const [field, messages] of Object.entries(error.problem.errors)) {
             const key = field.charAt(0).toLowerCase() + field.slice(1);
             setError(key as keyof RegisterInput, {
@@ -62,91 +77,98 @@ export function RegisterForm() {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full shadow-lg">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CardHeader>
-          <CardTitle className="text-2xl">Create your account</CardTitle>
-          <CardDescription>
-            Sign up to start managing your family&apos;s well-being.
+        <CardHeader className="space-y-2 pb-6">
+          <CardTitle className="text-h2">Create your account</CardTitle>
+          <CardDescription className="text-body-lg">
+            Start managing your family&apos;s well-being.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+        <CardContent className="space-y-5">
+          <FormField htmlFor="email" label="Email" error={errors.email?.message} required>
             <Input
               id="email"
               type="email"
               autoComplete="email"
+              placeholder="you@example.com"
+              className="h-11"
               {...register("email")}
               aria-invalid={!!errors.email}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+          <FormField
+            htmlFor="password"
+            label="Password"
+            hint="At least 8 characters with uppercase, digit, and special character."
+            error={errors.password?.message}
+            required
+          >
             <Input
               id="password"
               type="password"
               autoComplete="new-password"
+              placeholder="••••••••"
+              className="h-11"
               {...register("password")}
               aria-invalid={!!errors.password}
             />
-            <p className="text-xs text-muted-foreground">
-              At least 8 characters, with one uppercase, one digit, and one
-              special character.
-            </p>
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm password</Label>
+          <FormField
+            htmlFor="confirmPassword"
+            label="Confirm password"
+            error={errors.confirmPassword?.message}
+            required
+          >
             <Input
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
+              placeholder="••••••••"
+              className="h-11"
               {...register("confirmPassword")}
               aria-invalid={!!errors.confirmPassword}
             />
-            {errors.confirmPassword && (
-              <p className="text-sm text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="preferredLanguage">Preferred language</Label>
-            <select
-              id="preferredLanguage"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              {...register("preferredLanguage", { valueAsNumber: true })}
+          <FormField htmlFor="preferredLanguage" label="Preferred language">
+            <Select
+              value={String(preferredLanguage)}
+              onValueChange={(val) =>
+                setValue("preferredLanguage", Number(val) as RegisterInput["preferredLanguage"])
+              }
             >
-              <option value={2}>English (Canada)</option>
-              <option value={3}>Français (Canada)</option>
-              <option value={1}>Português (Brasil)</option>
-            </select>
-          </div>
+              <SelectTrigger id="preferredLanguage" className="h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">English (Canada)</SelectItem>
+                <SelectItem value="3">Français (Canada)</SelectItem>
+                <SelectItem value="1">Português (Brasil)</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
 
-          {errors.root && (
-            <p className="text-sm text-destructive" role="alert">
-              {errors.root.message}
-            </p>
-          )}
+          <FormRootError message={errors.root?.message} />
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <CardFooter className="flex flex-col gap-4 pt-2">
+          <Button
+            type="submit"
+            className="h-11 w-full text-base font-medium"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Creating account..." : "Create account"}
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/login"
+              className="text-primary font-medium underline-offset-4 hover:underline"
+            >
               Sign in
             </Link>
           </p>

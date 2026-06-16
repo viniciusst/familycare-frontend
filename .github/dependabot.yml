@@ -1,0 +1,64 @@
+version: 2
+
+updates:
+  # npm dependencies — daily because the Node ecosystem moves fast
+  # and security patches roll out frequently.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "06:00"
+      timezone: "America/Edmonton"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      # Group all React-related updates together to avoid noise.
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Group all Next.js related updates together.
+      nextjs:
+        patterns:
+          - "next"
+          - "eslint-config-next"
+          - "@next/*"
+      # Group all dev tooling together.
+      dev-tools:
+        dependency-type: "development"
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+          - "prettier*"
+          - "@types/*"
+      # Group TanStack updates.
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      # Group all Radix UI updates (shadcn primitives).
+      radix:
+        patterns:
+          - "@radix-ui/*"
+
+  # GitHub Actions versions — weekly is enough since they rarely change.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Edmonton"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"

@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { BackendError, callBackend, unwrapId } from "@/lib/api/backend";
-import {
-  clearSessionCookies,
-  getRefreshToken,
-  setSessionCookies,
-} from "@/lib/auth/session";
+import { clearSessionCookies, getRefreshToken, setSessionCookies } from "@/lib/auth/session";
 import type { AuthTokens } from "@/types/api";
 
 /**

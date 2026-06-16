@@ -17,9 +17,7 @@ import type { ProblemDetails } from "@/types/api";
 const BACKEND_URL = process.env.BACKEND_API_URL;
 
 if (!BACKEND_URL) {
-  throw new Error(
-    "BACKEND_API_URL is not set. Copy .env.example to .env.local."
-  );
+  throw new Error("BACKEND_API_URL is not set. Copy .env.example to .env.local.");
 }
 
 export class BackendError extends Error {

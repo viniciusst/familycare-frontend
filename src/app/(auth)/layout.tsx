@@ -1,25 +1,23 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-muted/30 px-4">
-      <header className="absolute top-0 z-10 flex w-full items-center justify-between p-4">
-        <Link href="/" className="flex items-center gap-2 font-bold">
+    <div className="bg-background relative flex min-h-screen flex-col">
+      <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-6">
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold">
           <span className="text-2xl">🏥</span>
-          <span>FamilyCare</span>
+          <span className="tracking-tight">FamilyCare</span>
         </Link>
         <ThemeToggle />
       </header>
 
-      <main className="w-full max-w-md">{children}</main>
+      <main className="flex flex-1 items-center justify-center px-6 py-24">
+        <div className="w-full max-w-md">{children}</div>
+      </main>
 
-      <footer className="absolute bottom-0 p-4 text-xs text-muted-foreground">
-        © {new Date().getFullYear()} FamilyCare
+      <footer className="text-muted-foreground p-6 text-center text-xs">
+        © {new Date().getFullYear()} FamilyCare · Built with care
       </footer>
     </div>
   );

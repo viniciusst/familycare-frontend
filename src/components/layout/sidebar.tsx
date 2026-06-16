@@ -29,7 +29,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-muted/30 md:block">
+    <aside className="bg-muted/30 hidden w-64 shrink-0 border-r md:block">
       <div className="flex h-16 items-center gap-2 border-b px-6">
         <span className="text-2xl">🏥</span>
         <Link href="/dashboard" className="font-bold">
@@ -39,8 +39,7 @@ export function Sidebar() {
 
       <nav className="flex flex-col gap-1 p-4">
         {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive =
-            pathname === href || pathname.startsWith(href + "/");
+          const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
