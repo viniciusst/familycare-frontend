@@ -14,7 +14,7 @@ export async function GET() {
   if (!accessToken) {
     return NextResponse.json(
       { type: "about:blank", title: "Not authenticated", status: 401 },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -37,7 +37,7 @@ export async function GET() {
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

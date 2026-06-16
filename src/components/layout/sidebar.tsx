@@ -39,8 +39,7 @@ export function Sidebar() {
 
       <nav className="flex flex-col gap-1 p-4">
         {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive =
-            pathname === href || pathname.startsWith(href + "/");
+          const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
@@ -49,7 +48,7 @@ export function Sidebar() {
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                 isActive
                   ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                  : "hover:bg-muted text-muted-foreground hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4" />

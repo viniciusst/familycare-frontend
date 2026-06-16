@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { type: "about:blank", title: "Invalid JSON body", status: 400 },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         status: 400,
         errors: parsed.error.flatten().fieldErrors,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

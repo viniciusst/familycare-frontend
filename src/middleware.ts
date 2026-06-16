@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
   const hasAccessToken = request.cookies.has("fc_access");
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   if (!hasAccessToken && !isPublicRoute) {

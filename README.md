@@ -74,6 +74,7 @@ The browser never talks directly to the backend. Every API call goes through `/a
 3. Translate the response back, including rotating cookies on refresh
 
 This means:
+
 - ✅ Tokens are **XSS-proof** (httpOnly)
 - ✅ Backend URL is **never exposed** to the browser
 - ✅ CORS is **not a concern** (same-origin)
@@ -127,17 +128,17 @@ familycare-frontend/
 
 ## 🧰 Tech stack
 
-| Concern | Choice | Why |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Server Components reduce client JS, file-system routing, edge middleware |
-| Language | TypeScript | Compile-time safety, matches backend's strongly-typed style |
-| Styling | Tailwind CSS 4 | Utility-first, atomic CSS, no specificity wars |
-| Components | shadcn/ui | Copy-paste primitives, full ownership, fully customizable |
-| Forms | react-hook-form + zod | Tiny, fast, with type inference from schemas |
-| Server state | TanStack Query | Cache, refetch, retry, devtools, industry standard |
-| Theme | next-themes | Light/dark/system, SSR-safe, no flash |
-| Notifications | Sonner | Beautiful toast notifications, accessible |
-| Icons | lucide-react | Tree-shakeable, consistent stroke width |
+| Concern       | Choice                  | Why                                                                      |
+| ------------- | ----------------------- | ------------------------------------------------------------------------ |
+| Framework     | Next.js 15 (App Router) | Server Components reduce client JS, file-system routing, edge middleware |
+| Language      | TypeScript              | Compile-time safety, matches backend's strongly-typed style              |
+| Styling       | Tailwind CSS 4          | Utility-first, atomic CSS, no specificity wars                           |
+| Components    | shadcn/ui               | Copy-paste primitives, full ownership, fully customizable                |
+| Forms         | react-hook-form + zod   | Tiny, fast, with type inference from schemas                             |
+| Server state  | TanStack Query          | Cache, refetch, retry, devtools, industry standard                       |
+| Theme         | next-themes             | Light/dark/system, SSR-safe, no flash                                    |
+| Notifications | Sonner                  | Beautiful toast notifications, accessible                                |
+| Icons         | lucide-react            | Tree-shakeable, consistent stroke width                                  |
 
 ---
 

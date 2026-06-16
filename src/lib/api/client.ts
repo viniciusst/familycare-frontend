@@ -9,7 +9,7 @@ import type { ProblemDetails } from "@/types/api";
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
-    public readonly problem: ProblemDetails
+    public readonly problem: ProblemDetails,
   ) {
     super(problem.title);
     this.name = "ApiError";
@@ -23,7 +23,7 @@ export interface ClientFetchOptions {
 
 export async function clientFetch<TResponse>(
   path: string,
-  options: ClientFetchOptions = {}
+  options: ClientFetchOptions = {},
 ): Promise<TResponse> {
   const response = await fetch(path, {
     method: options.method ?? "GET",

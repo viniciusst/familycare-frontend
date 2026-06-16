@@ -35,9 +35,7 @@ export function UserMenu() {
     router.refresh();
   };
 
-  const initials = me?.email
-    ? me.email.charAt(0).toUpperCase()
-    : "?";
+  const initials = me?.email ? me.email.charAt(0).toUpperCase() : "?";
 
   return (
     <DropdownMenu>

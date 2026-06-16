@@ -14,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { FormField, FormRootError } from "@/components/forms/form-primitives";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ApiError, clientFetch } from "@/lib/api/client";
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 
@@ -35,8 +35,6 @@ export function LoginForm() {
       router.refresh();
     } catch (error) {
       if (error instanceof ApiError) {
-        // The backend returns 403 for both wrong password AND unknown user
-        // (anti-enumeration). We mirror that ambiguity in the UI message.
         if (error.status === 403) {
           setError("root", { message: "Invalid email or password." });
         } else if (error.status === 429) {
@@ -55,58 +53,67 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full shadow-lg">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CardHeader>
-          <CardTitle className="text-2xl">Sign in</CardTitle>
-          <CardDescription>
-            Welcome back. Enter your credentials to continue.
+        <CardHeader className="space-y-2 pb-6">
+          <CardTitle className="text-h2">Welcome back</CardTitle>
+          <CardDescription className="text-body-lg">
+            Sign in to manage your family&apos;s well-being.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+        <CardContent className="space-y-5">
+          <FormField
+            htmlFor="email"
+            label="Email"
+            error={errors.email?.message}
+            required
+          >
             <Input
               id="email"
               type="email"
               autoComplete="email"
+              placeholder="you@example.com"
+              className="h-11"
               {...register("email")}
               aria-invalid={!!errors.email}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
+          </FormField>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+          <FormField
+            htmlFor="password"
+            label="Password"
+            error={errors.password?.message}
+            required
+          >
             <Input
               id="password"
               type="password"
               autoComplete="current-password"
+              placeholder="••••••••"
+              className="h-11"
               {...register("password")}
               aria-invalid={!!errors.password}
             />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+          </FormField>
 
-          {errors.root && (
-            <p className="text-sm text-destructive" role="alert">
-              {errors.root.message}
-            </p>
-          )}
+          <FormRootError message={errors.root?.message} />
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <CardFooter className="flex flex-col gap-4 pt-2">
+          <Button
+            type="submit"
+            className="w-full h-11 text-base font-medium"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Signing in..." : "Sign in"}
           </Button>
           <p className="text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-primary hover:underline">
+            <Link
+              href="/register"
+              className="font-medium text-primary hover:underline underline-offset-4"
+            >
               Create one
             </Link>
           </p>
