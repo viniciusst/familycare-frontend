@@ -11,8 +11,8 @@ updates:
       time: "06:00"
       timezone: "America/Edmonton"
     ignore:
-     - dependency-name: "eslint"
-       versions: [">=10.0.0"]
+      - dependency-name: "eslint"
+        versions: [">=10.0.0"]
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
