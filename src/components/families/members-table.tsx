@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, Pencil, UserMinus, ShieldCheck, Crown } from "lucide-react";
+import { MoreHorizontal, Pencil, FlaskConical, UserMinus, ShieldCheck, Crown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -36,6 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EditMemberDialog } from "./edit-member-dialog";
+import { RegisterExamForMemberDialog } from "@/components/exams/register-exam-for-member-dialog";
 import { useChangeMemberRole, useRemoveMember, useTransferOwnership } from "@/hooks/use-families";
 import { useMe } from "@/hooks/use-me";
 import { ApiError } from "@/lib/api/client";
@@ -89,6 +90,7 @@ interface MemberRowProps {
 
 function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProps) {
   const [editOpen, setEditOpen] = useState(false);
+  const [registerExamOpen, setRegisterExamOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
 
@@ -98,18 +100,17 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
 
   const isMemberOwner = member.role === 1;
 
-  // Show the actions menu if the user can manage members OR if this row is
-  // the user themselves (they can always edit their own profile). The Edit
-  // item is always available within this menu when shown; other actions
-  // (role/remove/transfer) remain gated by management privileges.
+  // The actions menu shows when the user has management privileges OR
+  // when this row represents the user themselves (they can always edit
+  // their own profile and register their own exams).
   const showActionsMenu = canManage || isMe;
 
-  // The Edit option is available when the user can manage members or when
-  // they're editing their own row.
+  // Edit details & Register exam: same rule — manage privileges or self.
   const canEditThisMember = canManage || isMe;
+  const canRegisterExamForThisMember = canManage || isMe;
 
-  // Management actions (change role, transfer, remove) remain restricted:
-  // not available on the Owner row, and not available to self when you're
+  // Management-only actions (role/transfer/remove) stay restricted: not
+  // available on the Owner row, and not available when editing self as
   // a regular member.
   const showManagementActions = canManage && !isMemberOwner && !isMe;
 
@@ -191,8 +192,17 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
                 </DropdownMenuItem>
               )}
 
+              {canRegisterExamForThisMember && (
+                <DropdownMenuItem onClick={() => setRegisterExamOpen(true)}>
+                  <FlaskConical className="mr-2 h-4 w-4" />
+                  Register exam
+                </DropdownMenuItem>
+              )}
+
               {showManagementActions && (
                 <>
+                  <DropdownMenuSeparator />
+
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <ShieldCheck className="mr-2 h-4 w-4" />
@@ -240,6 +250,14 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
           onOpenChange={setEditOpen}
           familyId={familyId}
           member={member}
+        />
+
+        {/* Register exam for this member */}
+        <RegisterExamForMemberDialog
+          open={registerExamOpen}
+          onOpenChange={setRegisterExamOpen}
+          memberId={member.id}
+          memberName={member.displayName}
         />
 
         {/* Remove confirmation */}
