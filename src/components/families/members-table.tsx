@@ -1,6 +1,14 @@
 "use client";
 
-import { MoreHorizontal, Pencil, FlaskConical, UserMinus, ShieldCheck, Crown } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  FlaskConical,
+  ShieldAlert,
+  UserMinus,
+  ShieldCheck,
+  Crown,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -37,6 +45,7 @@ import {
 } from "@/components/ui/table";
 import { EditMemberDialog } from "./edit-member-dialog";
 import { RegisterExamForMemberDialog } from "@/components/exams/register-exam-for-member-dialog";
+import { RegisterAllergyForMemberDialog } from "@/components/allergies/register-allergy-for-member-dialog";
 import { useChangeMemberRole, useRemoveMember, useTransferOwnership } from "@/hooks/use-families";
 import { useMe } from "@/hooks/use-me";
 import { ApiError } from "@/lib/api/client";
@@ -91,6 +100,7 @@ interface MemberRowProps {
 function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [registerExamOpen, setRegisterExamOpen] = useState(false);
+  const [registerAllergyOpen, setRegisterAllergyOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
 
@@ -100,18 +110,9 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
 
   const isMemberOwner = member.role === 1;
 
-  // The actions menu shows when the user has management privileges OR
-  // when this row represents the user themselves (they can always edit
-  // their own profile and register their own exams).
   const showActionsMenu = canManage || isMe;
-
-  // Edit details & Register exam: same rule — manage privileges or self.
   const canEditThisMember = canManage || isMe;
-  const canRegisterExamForThisMember = canManage || isMe;
-
-  // Management-only actions (role/transfer/remove) stay restricted: not
-  // available on the Owner row, and not available when editing self as
-  // a regular member.
+  const canRegisterMedicalForThisMember = canManage || isMe;
   const showManagementActions = canManage && !isMemberOwner && !isMe;
 
   const handleRoleChange = async (role: Role) => {
@@ -192,11 +193,17 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
                 </DropdownMenuItem>
               )}
 
-              {canRegisterExamForThisMember && (
-                <DropdownMenuItem onClick={() => setRegisterExamOpen(true)}>
-                  <FlaskConical className="mr-2 h-4 w-4" />
-                  Register exam
-                </DropdownMenuItem>
+              {canRegisterMedicalForThisMember && (
+                <>
+                  <DropdownMenuItem onClick={() => setRegisterExamOpen(true)}>
+                    <FlaskConical className="mr-2 h-4 w-4" />
+                    Register exam
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setRegisterAllergyOpen(true)}>
+                    <ShieldAlert className="mr-2 h-4 w-4" />
+                    Register allergy
+                  </DropdownMenuItem>
+                </>
               )}
 
               {showManagementActions && (
@@ -244,7 +251,6 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
           </DropdownMenu>
         )}
 
-        {/* Edit member */}
         <EditMemberDialog
           open={editOpen}
           onOpenChange={setEditOpen}
@@ -252,7 +258,6 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
           member={member}
         />
 
-        {/* Register exam for this member */}
         <RegisterExamForMemberDialog
           open={registerExamOpen}
           onOpenChange={setRegisterExamOpen}
@@ -260,7 +265,13 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
           memberName={member.displayName}
         />
 
-        {/* Remove confirmation */}
+        <RegisterAllergyForMemberDialog
+          open={registerAllergyOpen}
+          onOpenChange={setRegisterAllergyOpen}
+          memberId={member.id}
+          memberName={member.displayName}
+        />
+
         <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -282,7 +293,6 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Transfer ownership confirmation */}
         <AlertDialog open={transferOpen} onOpenChange={setTransferOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
