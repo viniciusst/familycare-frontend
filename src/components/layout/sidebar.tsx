@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Activity,
   Settings,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/vaccines", label: "Vaccines", icon: Syringe },
   { href: "/allergies", label: "Allergies", icon: AlertCircle },
   { href: "/conditions", label: "Conditions", icon: Activity },
+  { href: "/invitations", label: "Invitations", icon: Mail },
   { href: "/profile", label: "Settings", icon: Settings },
 ];
 
