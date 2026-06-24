@@ -2,15 +2,11 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientFetch } from "@/lib/api/client";
-import type {
-  ChangeAllergySeverityInput,
-  RegisterAllergyInput,
-} from "@/lib/schemas/allergy";
+import type { ChangeAllergySeverityInput, RegisterAllergyInput } from "@/lib/schemas/allergy";
 import type { Allergy, EnrichedAllergy } from "@/types/allergies";
 
 export const allergiesKey = ["allergies"] as const;
-export const memberAllergiesKey = (memberId: string) =>
-  ["allergies", "member", memberId] as const;
+export const memberAllergiesKey = (memberId: string) => ["allergies", "member", memberId] as const;
 
 /**
  * Lists all allergies across all families/members the user has access to.
@@ -20,8 +16,7 @@ export const memberAllergiesKey = (memberId: string) =>
 export function useAllAllergies() {
   return useQuery({
     queryKey: allergiesKey,
-    queryFn: () =>
-      clientFetch<{ items: EnrichedAllergy[] }>("/api/allergies"),
+    queryFn: () => clientFetch<{ items: EnrichedAllergy[] }>("/api/allergies"),
     select: (data) => data.items,
   });
 }
@@ -32,8 +27,7 @@ export function useAllAllergies() {
 export function useMemberAllergies(memberId: string) {
   return useQuery({
     queryKey: memberAllergiesKey(memberId),
-    queryFn: () =>
-      clientFetch<{ items: Allergy[] }>(`/api/members/${memberId}/allergies`),
+    queryFn: () => clientFetch<{ items: Allergy[] }>(`/api/members/${memberId}/allergies`),
     select: (data) => data.items,
     enabled: !!memberId,
   });
@@ -67,13 +61,7 @@ export function useRegisterAllergy(memberId: string) {
 export function useChangeAllergySeverity() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      allergyId,
-      input,
-    }: {
-      allergyId: string;
-      input: ChangeAllergySeverityInput;
-    }) =>
+    mutationFn: ({ allergyId, input }: { allergyId: string; input: ChangeAllergySeverityInput }) =>
       clientFetch(`/api/allergies/${allergyId}/severity`, {
         method: "PATCH",
         body: input,

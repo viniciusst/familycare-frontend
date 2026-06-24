@@ -32,10 +32,7 @@ import {
   changeAllergySeveritySchema,
   type ChangeAllergySeverityInput,
 } from "@/lib/schemas/allergy";
-import {
-  ALLERGY_SEVERITY_LABELS,
-  type EnrichedAllergy,
-} from "@/types/allergies";
+import { ALLERGY_SEVERITY_LABELS, type EnrichedAllergy } from "@/types/allergies";
 
 interface ChangeSeverityDialogProps {
   open: boolean;
@@ -43,11 +40,7 @@ interface ChangeSeverityDialogProps {
   allergy: EnrichedAllergy;
 }
 
-export function ChangeSeverityDialog({
-  open,
-  onOpenChange,
-  allergy,
-}: ChangeSeverityDialogProps) {
+export function ChangeSeverityDialog({ open, onOpenChange, allergy }: ChangeSeverityDialogProps) {
   const change = useChangeAllergySeverity();
 
   const {
@@ -85,10 +78,7 @@ export function ChangeSeverityDialog({
         }
       } else {
         setError("root", {
-          message:
-            error instanceof ApiError
-              ? error.problem.title
-              : "Could not update severity.",
+          message: error instanceof ApiError ? error.problem.title : "Could not update severity.",
         });
       }
     }
@@ -130,13 +120,11 @@ export function ChangeSeverityDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(ALLERGY_SEVERITY_LABELS).map(
-                    ([val, label]) => (
-                      <SelectItem key={val} value={val}>
-                        {label}
-                      </SelectItem>
-                    )
-                  )}
+                  {Object.entries(ALLERGY_SEVERITY_LABELS).map(([val, label]) => (
+                    <SelectItem key={val} value={val}>
+                      {label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormField>

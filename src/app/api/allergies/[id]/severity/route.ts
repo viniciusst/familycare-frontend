@@ -8,10 +8,7 @@ import { getAccessToken } from "@/lib/auth/session";
  * Updates an allergy's severity. Backend uses { newSeverity } in the body
  * (matches the new* prefix convention).
  */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(

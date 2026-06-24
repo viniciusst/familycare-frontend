@@ -38,14 +38,7 @@ export type RegisterAllergyInput = z.infer<typeof registerAllergySchema>;
  * (matches the new* prefix convention).
  */
 export const changeAllergySeveritySchema = z.object({
-  newSeverity: z.union([
-    z.literal(1),
-    z.literal(2),
-    z.literal(3),
-    z.literal(4),
-  ]),
+  newSeverity: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
 });
 
-export type ChangeAllergySeverityInput = z.infer<
-  typeof changeAllergySeveritySchema
->;
+export type ChangeAllergySeverityInput = z.infer<typeof changeAllergySeveritySchema>;

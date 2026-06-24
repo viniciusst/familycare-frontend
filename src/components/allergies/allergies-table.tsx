@@ -58,15 +58,11 @@ function AllergyRow({ allergy }: { allergy: EnrichedAllergy }) {
       <TableCell>
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarFallback>
-              {allergy.memberName.charAt(0).toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback>{allergy.memberName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-medium">{allergy.memberName}</div>
-            <div className="text-muted-foreground text-xs">
-              {allergy.familyName}
-            </div>
+            <div className="text-muted-foreground text-xs">{allergy.familyName}</div>
           </div>
         </div>
       </TableCell>
@@ -89,9 +85,11 @@ function AllergyRow({ allergy }: { allergy: EnrichedAllergy }) {
         )}
       </TableCell>
       <TableCell className="text-muted-foreground text-sm">
-        {allergy.firstObservedAt
-          ? new Date(allergy.firstObservedAt).toLocaleDateString()
-          : <span className="text-muted-foreground/60">—</span>}
+        {allergy.firstObservedAt ? (
+          new Date(allergy.firstObservedAt).toLocaleDateString()
+        ) : (
+          <span className="text-muted-foreground/60">—</span>
+        )}
       </TableCell>
       <TableCell>
         <DropdownMenu>
@@ -101,17 +99,11 @@ function AllergyRow({ allergy }: { allergy: EnrichedAllergy }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setChangeOpen(true)}>
-              Change severity
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setChangeOpen(true)}>Change severity</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <ChangeSeverityDialog
-          open={changeOpen}
-          onOpenChange={setChangeOpen}
-          allergy={allergy}
-        />
+        <ChangeSeverityDialog open={changeOpen} onOpenChange={setChangeOpen} allergy={allergy} />
       </TableCell>
     </TableRow>
   );

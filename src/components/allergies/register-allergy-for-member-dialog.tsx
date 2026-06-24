@@ -30,10 +30,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useRegisterAllergy } from "@/hooks/use-allergies";
 import { ApiError } from "@/lib/api/client";
-import {
-  registerAllergySchema,
-  type RegisterAllergyInput,
-} from "@/lib/schemas/allergy";
+import { registerAllergySchema, type RegisterAllergyInput } from "@/lib/schemas/allergy";
 import { ALLERGY_SEVERITY_LABELS } from "@/types/allergies";
 
 interface RegisterAllergyForMemberDialogProps {
@@ -104,10 +101,7 @@ export function RegisterAllergyForMemberDialog({
         }
       } else {
         setError("root", {
-          message:
-            error instanceof ApiError
-              ? error.problem.title
-              : "Could not register allergy.",
+          message: error instanceof ApiError ? error.problem.title : "Could not register allergy.",
         });
       }
     }
@@ -123,8 +117,7 @@ export function RegisterAllergyForMemberDialog({
               Register allergy for {memberName}
             </DialogTitle>
             <DialogDescription className="text-body">
-              Record a known allergy. Severity can be updated later as
-              reactions are observed.
+              Record a known allergy. Severity can be updated later as reactions are observed.
             </DialogDescription>
           </DialogHeader>
 
@@ -155,24 +148,20 @@ export function RegisterAllergyForMemberDialog({
                 <Select
                   value={String(severity)}
                   onValueChange={(val) =>
-                    setValue(
-                      "severity",
-                      Number(val) as RegisterAllergyInput["severity"],
-                      { shouldDirty: true }
-                    )
+                    setValue("severity", Number(val) as RegisterAllergyInput["severity"], {
+                      shouldDirty: true,
+                    })
                   }
                 >
                   <SelectTrigger id="severity" className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(ALLERGY_SEVERITY_LABELS).map(
-                      ([val, label]) => (
-                        <SelectItem key={val} value={val}>
-                          {label}
-                        </SelectItem>
-                      )
-                    )}
+                    {Object.entries(ALLERGY_SEVERITY_LABELS).map(([val, label]) => (
+                      <SelectItem key={val} value={val}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormField>

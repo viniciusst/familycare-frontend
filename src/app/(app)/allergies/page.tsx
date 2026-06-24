@@ -45,8 +45,7 @@ function AllergiesPageInner() {
     return allergies.filter((a) => {
       if (familyFilter !== "all" && a.familyId !== familyFilter) return false;
       if (memberFilter !== "all" && a.memberId !== memberFilter) return false;
-      if (severityFilter !== "all" && String(a.severity) !== severityFilter)
-        return false;
+      if (severityFilter !== "all" && String(a.severity) !== severityFilter) return false;
       return true;
     });
   }, [allergies, familyFilter, memberFilter, severityFilter]);
@@ -63,9 +62,7 @@ function AllergiesPageInner() {
   };
 
   const visibleMembers =
-    familyFilter === "all"
-      ? members
-      : members.filter((m) => m.familyId === familyFilter);
+    familyFilter === "all" ? members : members.filter((m) => m.familyId === familyFilter);
 
   return (
     <>
@@ -103,10 +100,7 @@ function AllergiesPageInner() {
           </SelectContent>
         </Select>
 
-        <Select
-          value={severityFilter}
-          onValueChange={(v) => setFilter("severity", v)}
-        >
+        <Select value={severityFilter} onValueChange={(v) => setFilter("severity", v)}>
           <SelectTrigger className="h-10 w-48">
             <SelectValue placeholder="All severities" />
           </SelectTrigger>
@@ -122,18 +116,14 @@ function AllergiesPageInner() {
 
       {isLoading && <Skeleton className="h-64 w-full rounded-xl" />}
 
-      {isError && (
-        <p className="text-destructive">Could not load allergies.</p>
-      )}
+      {isError && <p className="text-destructive">Could not load allergies.</p>}
 
       {!isLoading && !isError && filteredAllergies.length === 0 && (
         <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16 text-center">
           <ShieldAlert className="text-muted-foreground h-8 w-8" />
           <p className="text-h4">No allergies to show</p>
           <p className="text-body text-muted-foreground max-w-sm">
-            {familyFilter !== "all" ||
-            memberFilter !== "all" ||
-            severityFilter !== "all"
+            {familyFilter !== "all" || memberFilter !== "all" || severityFilter !== "all"
               ? "Try clearing the filters to see all allergies."
               : "Register an allergy from a member's profile to start tracking."}
           </p>

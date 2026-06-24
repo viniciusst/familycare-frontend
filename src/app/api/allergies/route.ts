@@ -48,9 +48,10 @@ export async function GET() {
           ? (familyRaw.id as { value: string }).value
           : String(familyRaw.id);
 
-      const familyDetailRaw = await callBackend<
-        Parameters<typeof normalizeFamilyDetail>[0]
-      >(`/api/v1/families/${familyId}`, { accessToken });
+      const familyDetailRaw = await callBackend<Parameters<typeof normalizeFamilyDetail>[0]>(
+        `/api/v1/families/${familyId}`,
+        { accessToken }
+      );
       const familyDetail = normalizeFamilyDetail(familyDetailRaw);
 
       for (const member of familyDetail.members) {
@@ -70,10 +71,7 @@ export async function GET() {
           }
         } catch (memberError) {
           // Skip individual member failures — privacy rules may hide some.
-          console.warn(
-            `[GET /allergies] skipping member ${member.id}:`,
-            memberError
-          );
+          console.warn(`[GET /allergies] skipping member ${member.id}:`, memberError);
         }
       }
     }
