@@ -31,10 +31,22 @@ import {
 import { useInviteMember } from "@/hooks/use-invitations";
 import { ApiError } from "@/lib/api/client";
 import { inviteMemberSchema, type InviteMemberInput } from "@/lib/schemas/invitation";
+import { RELATIONSHIP_LABELS } from "@/types/api";
 
 interface InviteMemberDialogProps {
   familyId: string;
 }
+
+/**
+ * Role options for invitations. Owner (1) is excluded — ownership is
+ * transferred separately, not granted via invitation.
+ */
+const ROLE_OPTIONS: Array<{ value: number; label: string }> = [
+  { value: 2, label: "Admin" },
+  { value: 3, label: "Adult" },
+  { value: 4, label: "Minor" },
+  { value: 5, label: "Caregiver" },
+];
 
 export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
   const [open, setOpen] = useState(false);
@@ -52,14 +64,14 @@ export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
     resolver: zodResolver(inviteMemberSchema),
     defaultValues: {
       email: "",
-      role: 3,
-      relationship: 8,
+      proposedRole: 3,
+      proposedRelationship: 99, // Other — safest default
       expiresInDays: 14,
     },
   });
 
-  const role = watch("role");
-  const relationship = watch("relationship");
+  const proposedRole = watch("proposedRole");
+  const proposedRelationship = watch("proposedRelationship");
   const expiresInDays = watch("expiresInDays");
 
   const onSubmit = async (data: InviteMemberInput) => {
@@ -85,6 +97,9 @@ export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
       }
     }
   };
+
+  // Exclude "Self" (1) from invitation options — you can't invite yourself.
+  const relationshipOptions = Object.entries(RELATIONSHIP_LABELS).filter(([val]) => val !== "1");
 
   return (
     <Dialog
@@ -123,44 +138,49 @@ export function InviteMemberDialog({ familyId }: InviteMemberDialogProps) {
             </FormField>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <FormField htmlFor="role" label="Role" hint="Permission level">
+              <FormField htmlFor="proposedRole" label="Role" hint="Permission level">
                 <Select
-                  value={String(role)}
+                  value={String(proposedRole)}
                   onValueChange={(val) =>
-                    setValue("role", Number(val) as InviteMemberInput["role"])
+                    setValue("proposedRole", Number(val) as InviteMemberInput["proposedRole"])
                   }
                 >
-                  <SelectTrigger id="role" className="h-11">
+                  <SelectTrigger id="proposedRole" className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2">Admin</SelectItem>
-                    <SelectItem value="3">Adult</SelectItem>
-                    <SelectItem value="4">Minor</SelectItem>
-                    <SelectItem value="5">Caregiver</SelectItem>
+                    {ROLE_OPTIONS.map(({ value, label }) => (
+                      <SelectItem key={value} value={String(value)}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormField>
 
-              <FormField htmlFor="relationship" label="Relationship" hint="How they relate to you">
+              <FormField
+                htmlFor="proposedRelationship"
+                label="Relationship"
+                hint="How they relate to you"
+              >
                 <Select
-                  value={String(relationship)}
+                  value={String(proposedRelationship)}
                   onValueChange={(val) =>
-                    setValue("relationship", Number(val) as InviteMemberInput["relationship"])
+                    setValue(
+                      "proposedRelationship",
+                      Number(val) as InviteMemberInput["proposedRelationship"]
+                    )
                   }
                 >
-                  <SelectTrigger id="relationship" className="h-11">
+                  <SelectTrigger id="proposedRelationship" className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2">Spouse</SelectItem>
-                    <SelectItem value="3">Parent</SelectItem>
-                    <SelectItem value="4">Child</SelectItem>
-                    <SelectItem value="5">Sibling</SelectItem>
-                    <SelectItem value="6">Grandparent</SelectItem>
-                    <SelectItem value="7">Grandchild</SelectItem>
-                    <SelectItem value="9">Caregiver</SelectItem>
-                    <SelectItem value="8">Other</SelectItem>
+                    {relationshipOptions.map(([val, label]) => (
+                      <SelectItem key={val} value={val}>
+                        {label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormField>

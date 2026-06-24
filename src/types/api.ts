@@ -4,6 +4,10 @@
  * The backend serializes IDs as flat strings (e.g. "guid-here") OR
  * as nested { value: "..." } objects in some payloads. The api/normalizers
  * module unwraps either shape to a plain string.
+ *
+ * ⚠️ Enum values MUST match the backend's Enums.cs exactly. The Relationship
+ * range is intentionally discontinuous (1-7 then 99 for "Other") to leave
+ * room for future values without renumbering.
  */
 
 // =============================================================================
@@ -38,13 +42,12 @@ export type Role = 1 | 2 | 3 | 4 | 5;
 export type RelationshipType =
   | 1 // Self
   | 2 // Spouse
-  | 3 // Parent
-  | 4 // Child
+  | 3 // Child
+  | 4 // Parent
   | 5 // Sibling
   | 6 // Grandparent
   | 7 // Grandchild
-  | 8 // Other
-  | 9; // Caregiver
+  | 99; // Other
 
 export const ROLE_LABELS: Record<Role, string> = {
   1: "Owner",
@@ -57,13 +60,12 @@ export const ROLE_LABELS: Record<Role, string> = {
 export const RELATIONSHIP_LABELS: Record<RelationshipType, string> = {
   1: "Self",
   2: "Spouse",
-  3: "Parent",
-  4: "Child",
+  3: "Child",
+  4: "Parent",
   5: "Sibling",
   6: "Grandparent",
   7: "Grandchild",
-  8: "Other",
-  9: "Caregiver",
+  99: "Other",
 };
 
 export interface FamilySummary {
@@ -98,26 +100,46 @@ export interface FamilyMember {
 // Invitations
 // =============================================================================
 
-export type InvitationStatus = 1 | 2 | 3 | 4;
-// 1=Pending, 2=Accepted, 3=Declined, 4=Revoked, expired is a derived state
+export type InvitationStatus = 1 | 2 | 3 | 4 | 5;
+// 1=Pending, 2=Accepted, 3=Declined, 4=Expired, 5=Revoked
 
 export const INVITATION_STATUS_LABELS: Record<InvitationStatus, string> = {
   1: "Pending",
   2: "Accepted",
   3: "Declined",
-  4: "Revoked",
+  4: "Expired",
+  5: "Revoked",
 };
 
+/**
+ * Invitation as returned by GET /families/{id}/invitations (admin view).
+ * Uses the "proposed" prefix to match the backend's Invitation entity.
+ */
 export interface Invitation {
+  id: string;
+  familyId: string;
+  email: string;
+  proposedRole: Role;
+  proposedRelationship: RelationshipType;
+  status: InvitationStatus;
+  createdAt: string;
+  expiresAt: string;
+}
+
+/**
+ * InvitationDetails as returned by GET /invitations (user's inbox).
+ * Enriched with familyName so the recipient can see which family
+ * invited them without an extra round-trip.
+ */
+export interface InvitationDetails {
   id: string;
   familyId: string;
   familyName: string;
   email: string;
-  role: Role;
-  relationship: RelationshipType;
+  proposedRole: Role;
+  proposedRelationship: RelationshipType;
   status: InvitationStatus;
-  invitedByUserId: string;
-  invitedAt: string;
+  createdAt: string;
   expiresAt: string;
 }
 

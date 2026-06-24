@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, UserMinus, ShieldCheck, Crown } from "lucide-react";
+import { MoreHorizontal, Pencil, UserMinus, ShieldCheck, Crown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EditMemberDialog } from "./edit-member-dialog";
 import { useChangeMemberRole, useRemoveMember, useTransferOwnership } from "@/hooks/use-families";
 import { useMe } from "@/hooks/use-me";
 import { ApiError } from "@/lib/api/client";
@@ -87,6 +88,7 @@ interface MemberRowProps {
 }
 
 function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProps) {
+  const [editOpen, setEditOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
 
@@ -95,7 +97,21 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
   const transferOwnership = useTransferOwnership(familyId);
 
   const isMemberOwner = member.role === 1;
-  const showActions = canManage && !isMemberOwner && !isMe;
+
+  // Show the actions menu if the user can manage members OR if this row is
+  // the user themselves (they can always edit their own profile). The Edit
+  // item is always available within this menu when shown; other actions
+  // (role/remove/transfer) remain gated by management privileges.
+  const showActionsMenu = canManage || isMe;
+
+  // The Edit option is available when the user can manage members or when
+  // they're editing their own row.
+  const canEditThisMember = canManage || isMe;
+
+  // Management actions (change role, transfer, remove) remain restricted:
+  // not available on the Owner row, and not available to self when you're
+  // a regular member.
+  const showManagementActions = canManage && !isMemberOwner && !isMe;
 
   const handleRoleChange = async (role: Role) => {
     try {
@@ -157,7 +173,7 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
         {new Date(member.joinedAt).toLocaleDateString()}
       </TableCell>
       <TableCell>
-        {showActions && (
+        {showActionsMenu && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -168,44 +184,63 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
               <DropdownMenuLabel>Manage member</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <ShieldCheck className="mr-2 h-4 w-4" />
-                  Change role
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  {([2, 3, 4, 5] as Role[]).map((role) => (
-                    <DropdownMenuItem
-                      key={role}
-                      disabled={role === member.role}
-                      onClick={() => handleRoleChange(role)}
-                    >
-                      {ROLE_LABELS[role]}
-                      {role === member.role && " (current)"}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-
-              {isOwner && (
-                <DropdownMenuItem onClick={() => setTransferOpen(true)}>
-                  <Crown className="mr-2 h-4 w-4" />
-                  Transfer ownership
+              {canEditThisMember && (
+                <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit details
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuSeparator />
+              {showManagementActions && (
+                <>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      Change role
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {([2, 3, 4, 5] as Role[]).map((role) => (
+                        <DropdownMenuItem
+                          key={role}
+                          disabled={role === member.role}
+                          onClick={() => handleRoleChange(role)}
+                        >
+                          {ROLE_LABELS[role]}
+                          {role === member.role && " (current)"}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
 
-              <DropdownMenuItem
-                onClick={() => setRemoveOpen(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                <UserMinus className="mr-2 h-4 w-4" />
-                Remove from family
-              </DropdownMenuItem>
+                  {isOwner && (
+                    <DropdownMenuItem onClick={() => setTransferOpen(true)}>
+                      <Crown className="mr-2 h-4 w-4" />
+                      Transfer ownership
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={() => setRemoveOpen(true)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <UserMinus className="mr-2 h-4 w-4" />
+                    Remove from family
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+
+        {/* Edit member */}
+        <EditMemberDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          familyId={familyId}
+          member={member}
+        />
 
         {/* Remove confirmation */}
         <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>

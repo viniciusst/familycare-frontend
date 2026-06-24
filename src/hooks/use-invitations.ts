@@ -1,30 +1,60 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { familyKey } from "@/hooks/use-families";
 import { clientFetch } from "@/lib/api/client";
 import type { AcceptInvitationInput, InviteMemberInput } from "@/lib/schemas/invitation";
-import type { Invitation } from "@/types/api";
+import type { Invitation, InvitationDetails } from "@/types/api";
+
+export const myInvitationsKey = ["invitations", "mine"] as const;
+export const familyInvitationsKey = (familyId: string) =>
+  ["invitations", "family", familyId] as const;
+export const invitationKey = (id: string) => ["invitations", id] as const;
 
 /**
- * Invitation hooks. NOTE: the backend doesn't expose a "list my invitations"
- * or "list family invitations" endpoint yet, so this module only contains
- * mutation hooks (send, revoke, accept, decline). When those endpoints
- * land we'll add useMyInvitations / useFamilyInvitations / etc.
+ * Lists invitations addressed to the current authenticated user.
+ * Backend filters by the user's email automatically.
  */
+export function useMyInvitations(status?: number) {
+  const qs = status !== undefined ? `?status=${status}` : "";
+  return useQuery({
+    queryKey: [...myInvitationsKey, status ?? "all"] as const,
+    queryFn: () => clientFetch<{ items: InvitationDetails[] }>(`/api/invitations${qs}`),
+    select: (data) => data.items,
+  });
+}
 
+/**
+ * Lists invitations of a given family (admin view).
+ * Backend authorization: Owner/Admin only.
+ */
+export function useFamilyInvitations(familyId: string, status?: number) {
+  const qs = status !== undefined ? `?status=${status}` : "";
+  return useQuery({
+    queryKey: [...familyInvitationsKey(familyId), status ?? "all"] as const,
+    queryFn: () =>
+      clientFetch<{ items: Invitation[] }>(`/api/families/${familyId}/invitations${qs}`),
+    select: (data) => data.items,
+    enabled: !!familyId,
+  });
+}
+
+/**
+ * Sends a new invitation. Defensive: don't normalize the POST response —
+ * the create succeeded if status is 2xx, the family detail refetch will
+ * surface the new pending invitation.
+ */
 export function useInviteMember(familyId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: InviteMemberInput) =>
-      clientFetch<Invitation>(`/api/families/${familyId}/invitations`, {
+      clientFetch<{ ok: true }>(`/api/families/${familyId}/invitations`, {
         method: "POST",
         body: input,
       }),
     onSuccess: () => {
-      // No invitation list to invalidate yet — backend doesn't expose one.
-      // Once it does, invalidate the list query here.
       queryClient.invalidateQueries({ queryKey: familyKey(familyId) });
+      queryClient.invalidateQueries({ queryKey: familyInvitationsKey(familyId) });
     },
   });
 }
@@ -38,6 +68,7 @@ export function useRevokeInvitation(familyId: string) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: familyKey(familyId) });
+      queryClient.invalidateQueries({ queryKey: familyInvitationsKey(familyId) });
     },
   });
 }
@@ -52,15 +83,20 @@ export function useAcceptInvitation() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["families"] });
+      queryClient.invalidateQueries({ queryKey: myInvitationsKey });
     },
   });
 }
 
 export function useDeclineInvitation() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (invitationId: string) =>
       clientFetch(`/api/invitations/${invitationId}/decline`, {
         method: "POST",
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: myInvitationsKey });
+    },
   });
 }

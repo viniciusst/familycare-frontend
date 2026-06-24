@@ -1,5 +1,11 @@
 import { unwrapId } from "./backend";
-import type { FamilyDetail, FamilyMember, FamilySummary, Invitation } from "@/types/api";
+import type {
+  FamilyDetail,
+  FamilyMember,
+  FamilySummary,
+  Invitation,
+  InvitationDetails,
+} from "@/types/api";
 
 /**
  * Backend response normalizers. Each raw response needs to be passed
@@ -35,17 +41,30 @@ interface RawFamilyDetail {
   members: RawFamilyMember[];
 }
 
+/**
+ * Raw shape of an Invitation as returned by the backend (admin view).
+ * The "proposed" prefix matches the backend's Invitation entity:
+ * a pending invitation proposes a Role and RelationshipType that will
+ * become final only if accepted.
+ */
 interface RawInvitation {
   id: unknown;
   familyId: unknown;
-  familyName: string;
   email: string;
-  role: number;
-  relationship: number;
+  proposedRole: number;
+  proposedRelationship: number;
   status: number;
-  invitedByUserId: unknown;
-  invitedAt: string;
+  createdAt: string;
   expiresAt: string;
+}
+
+/**
+ * Raw shape of InvitationDetails (inbox view). Same as Invitation but
+ * enriched with familyName so the recipient can see which family
+ * invited them without an extra round-trip.
+ */
+interface RawInvitationDetails extends RawInvitation {
+  familyName: string;
 }
 
 export function normalizeFamilySummary(raw: RawFamilySummary): FamilySummary {
@@ -85,13 +104,25 @@ export function normalizeInvitation(raw: RawInvitation): Invitation {
   return {
     id: unwrapId(raw.id),
     familyId: unwrapId(raw.familyId),
+    email: raw.email,
+    proposedRole: raw.proposedRole as Invitation["proposedRole"],
+    proposedRelationship: raw.proposedRelationship as Invitation["proposedRelationship"],
+    status: raw.status as Invitation["status"],
+    createdAt: raw.createdAt,
+    expiresAt: raw.expiresAt,
+  };
+}
+
+export function normalizeInvitationDetails(raw: RawInvitationDetails): InvitationDetails {
+  return {
+    id: unwrapId(raw.id),
+    familyId: unwrapId(raw.familyId),
     familyName: raw.familyName,
     email: raw.email,
-    role: raw.role as Invitation["role"],
-    relationship: raw.relationship as Invitation["relationship"],
-    status: raw.status as Invitation["status"],
-    invitedByUserId: unwrapId(raw.invitedByUserId),
-    invitedAt: raw.invitedAt,
+    proposedRole: raw.proposedRole as InvitationDetails["proposedRole"],
+    proposedRelationship: raw.proposedRelationship as InvitationDetails["proposedRelationship"],
+    status: raw.status as InvitationDetails["status"],
+    createdAt: raw.createdAt,
     expiresAt: raw.expiresAt,
   };
 }

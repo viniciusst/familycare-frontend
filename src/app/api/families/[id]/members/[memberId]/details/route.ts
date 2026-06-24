@@ -3,15 +3,17 @@ import { BackendError, callBackend } from "@/lib/api/backend";
 import { getAccessToken } from "@/lib/auth/session";
 
 /**
- * POST /api/families/[id]/invitations
+ * PATCH /api/families/[id]/members/[memberId]/details
  *
- * Defensive: backend returns 201 with InviteMemberResponse, but we don't
- * normalize that response — the shape may diverge (strongly-typed IDs,
- * enrichment fields, etc). Returning { ok: true } lets the client refetch
- * the family detail (which already includes invitations) to get the
- * canonical state.
+ * Updates editable details of a family member (displayName, birthDate,
+ * relationship). Backend authorization:
+ * - Owner/Admin can edit anyone
+ * - Regular members can edit only themselves
  */
-export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string; memberId: string }> }
+) {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return NextResponse.json(
@@ -20,7 +22,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     );
   }
 
-  const { id } = await params;
+  const { id, memberId } = await params;
 
   let body: unknown;
   try {
@@ -33,17 +35,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   }
 
   try {
-    await callBackend(`/api/v1/families/${id}/invitations`, {
-      method: "POST",
+    await callBackend(`/api/v1/families/${id}/members/${memberId}/details`, {
+      method: "PATCH",
       body,
       accessToken,
     });
-    return NextResponse.json({ ok: true }, { status: 201 });
+    return NextResponse.json({ ok: true });
   } catch (error) {
     if (error instanceof BackendError) {
       return NextResponse.json(error.problem, { status: error.status });
     }
-    console.error("[POST /families/[id]/invitations] unexpected error:", error);
     return NextResponse.json(
       { type: "about:blank", title: "Internal Server Error", status: 500 },
       { status: 500 }
