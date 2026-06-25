@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FlaskConical } from "lucide-react";
+import { FlaskConical, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ExamsTable } from "@/components/exams/exams-table";
+import { RegisterExamForMemberDialog } from "@/components/exams/register-exam-for-member-dialog";
 import { useAllExams } from "@/hooks/use-exams";
 import { useFamilies } from "@/hooks/use-families";
 
@@ -23,10 +25,11 @@ function ExamsPageInner() {
   const familyFilter = searchParams.get("family") ?? "all";
   const memberFilter = searchParams.get("member") ?? "all";
 
+  const [registerOpen, setRegisterOpen] = useState(false);
+
   const { data: exams = [], isLoading, isError } = useAllExams();
   const { data: families = [] } = useFamilies();
 
-  // Distinct members across the loaded exams.
   const members = useMemo(() => {
     const map = new Map<string, { id: string; name: string; familyId: string }>();
     for (const e of exams) {
@@ -56,7 +59,6 @@ function ExamsPageInner() {
     } else {
       sp.set(key, value);
     }
-    // When changing family, reset the member filter.
     if (key === "family") sp.delete("member");
     router.replace(`/exams?${sp.toString()}`);
   };
@@ -64,11 +66,21 @@ function ExamsPageInner() {
   const visibleMembers =
     familyFilter === "all" ? members : members.filter((m) => m.familyId === familyFilter);
 
+  // When the user has filtered by member, pre-select that member in the
+  // "New exam" dialog so they don't have to pick it again.
+  const defaultMemberForNew = memberFilter !== "all" ? memberFilter : undefined;
+
   return (
     <>
       <PageHeader
         title="Exams"
         description="Lab tests, imaging, and other exams across your families."
+        actions={
+          <Button onClick={() => setRegisterOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New exam
+          </Button>
+        }
       />
 
       <div className="mb-6 flex flex-wrap gap-3">
@@ -112,12 +124,18 @@ function ExamsPageInner() {
           <p className="text-body text-muted-foreground max-w-sm">
             {familyFilter !== "all" || memberFilter !== "all"
               ? "Try clearing the filters to see all exams."
-              : "Register an exam from a member's profile to start tracking."}
+              : 'Click "New exam" above to start tracking.'}
           </p>
         </div>
       )}
 
       {!isLoading && !isError && filteredExams.length > 0 && <ExamsTable exams={filteredExams} />}
+
+      <RegisterExamForMemberDialog
+        open={registerOpen}
+        onOpenChange={setRegisterOpen}
+        defaultMemberId={defaultMemberForNew}
+      />
     </>
   );
 }
