@@ -40,7 +40,7 @@ import { COMMON_SPECIALTIES } from "@/types/appointments";
 interface ScheduleAppointmentDialogProps {
   members: {
     memberId: string;
-    memberDisplayName: string;
+    memberName: string;
     familyId: string;
     familyName: string;
   }[];
@@ -141,8 +141,7 @@ export function ScheduleAppointmentDialog({
                 <SelectContent>
                   {members.map((m) => (
                     <SelectItem key={m.memberId} value={m.memberId}>
-                      {m.memberDisplayName}{" "}
-                      <span className="text-muted-foreground">· {m.familyName}</span>
+                      {m.memberName} <span className="text-muted-foreground">· {m.familyName}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>

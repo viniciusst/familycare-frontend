@@ -132,7 +132,7 @@ function AppointmentRow({ appointment, showMemberColumn }: AppointmentRowProps) 
       {showMemberColumn && (
         <TableCell>
           <div className="space-y-0.5">
-            <div className="font-medium">{appointment.memberDisplayName ?? "—"}</div>
+            <div className="font-medium">{appointment.memberName ?? "—"}</div>
             {appointment.familyName && (
               <div className="text-muted-foreground text-xs">{appointment.familyName}</div>
             )}

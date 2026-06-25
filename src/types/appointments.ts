@@ -60,9 +60,9 @@ export interface Appointment {
  * family id, and family name attached for display purposes.
  */
 export interface EnrichedAppointment extends Appointment {
-  memberDisplayName?: string;
-  familyId?: string;
-  familyName?: string;
+  memberName: string; // ← padronizado
+  familyId: string;
+  familyName: string;
 }
 
 export function isPastDue(appointment: Appointment): boolean {

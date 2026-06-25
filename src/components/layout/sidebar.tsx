@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { useMyInvitations } from "@/hooks/use-invitations";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -25,10 +27,15 @@ const navItems = [
   { href: "/conditions", label: "Conditions", icon: Activity },
   { href: "/invitations", label: "Invitations", icon: Mail },
   { href: "/profile", label: "Settings", icon: Settings },
-];
+] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
+
+  // Pending invitations only (status = 1). Used for the badge on the
+  // Invitations nav item.
+  const { data: pendingInvitations = [] } = useMyInvitations(1);
+  const pendingCount = pendingInvitations.length;
 
   return (
     <aside className="bg-muted/30 hidden w-64 shrink-0 border-r md:block">
@@ -38,10 +45,11 @@ export function Sidebar() {
           FamilyCare
         </Link>
       </div>
-
       <nav className="flex flex-col gap-1 p-4">
         {navItems.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
+          const showBadge = href === "/invitations" && pendingCount > 0;
+
           return (
             <Link
               key={href}
@@ -54,7 +62,15 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {label}
+              <span className="flex-1">{label}</span>
+              {showBadge && (
+                <Badge
+                  variant={isActive ? "secondary" : "default"}
+                  className="h-5 min-w-5 justify-center px-1.5 text-xs"
+                >
+                  {pendingCount}
+                </Badge>
+              )}
             </Link>
           );
         })}

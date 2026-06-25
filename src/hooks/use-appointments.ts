@@ -17,7 +17,10 @@ export const appointmentsByMemberKey = (memberId: string) =>
 
 /**
  * Aggregates appointments across all families/members and enriches each
- * one with memberDisplayName + familyId + familyName for display.
+ * one with memberName + familyId + familyName for display. The naming
+ * (memberName, not memberDisplayName) matches the convention used by
+ * EnrichedExam and EnrichedAllergy so the rest of the app speaks one
+ * vocabulary.
  */
 export function useAllAppointments() {
   const { data: families = [] } = useFamilies();
@@ -38,7 +41,7 @@ export function useAllAppointments() {
     const map = new Map<string, { displayName: string; familyId: string; familyName: string }>();
     const list: {
       memberId: string;
-      memberDisplayName: string;
+      memberName: string;
       familyId: string;
       familyName: string;
     }[] = [];
@@ -53,7 +56,7 @@ export function useAllAppointments() {
           });
           list.push({
             memberId: m.id,
-            memberDisplayName: m.displayName,
+            memberName: m.displayName,
             familyId: q.data!.id,
             familyName: q.data!.name,
           });
@@ -83,11 +86,18 @@ export function useAllAppointments() {
       if (q.data) {
         q.data.items.forEach((a) => {
           const info = membersMap.get(a.memberId);
+          // Skip appointments whose member we can't resolve. This may
+          // happen during a brief moment where the families list and the
+          // appointment queries are out of sync (e.g. a member was just
+          // removed) or if privacy rules hide the member.
+          if (!info) {
+            return;
+          }
           all.push({
             ...a,
-            memberDisplayName: info?.displayName,
-            familyId: info?.familyId,
-            familyName: info?.familyName,
+            memberName: info.displayName,
+            familyId: info.familyId,
+            familyName: info.familyName,
           });
         });
       }
