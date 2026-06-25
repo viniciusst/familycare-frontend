@@ -159,7 +159,7 @@ function AppointmentsPageContent() {
             <SelectItem value="all">All members</SelectItem>
             {visibleMembers.map((m) => (
               <SelectItem key={m.memberId} value={m.memberId}>
-                {m.memberDisplayName}
+                {m.memberName}
                 {showFamilyFilter ? (
                   <span className="text-muted-foreground"> · {m.familyName}</span>
                 ) : null}
