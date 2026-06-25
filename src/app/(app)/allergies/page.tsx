@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
+import { Plus, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/layout/page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AllergiesTable } from "@/components/allergies/allergies-table";
+import { RegisterAllergyForMemberDialog } from "@/components/allergies/register-allergy-for-member-dialog";
 import { useAllAllergies } from "@/hooks/use-allergies";
 import { useFamilies } from "@/hooks/use-families";
 
@@ -23,6 +25,8 @@ function AllergiesPageInner() {
   const familyFilter = searchParams.get("family") ?? "all";
   const memberFilter = searchParams.get("member") ?? "all";
   const severityFilter = searchParams.get("severity") ?? "all";
+
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   const { data: allergies = [], isLoading, isError } = useAllAllergies();
   const { data: families = [] } = useFamilies();
@@ -64,11 +68,19 @@ function AllergiesPageInner() {
   const visibleMembers =
     familyFilter === "all" ? members : members.filter((m) => m.familyId === familyFilter);
 
+  const defaultMemberForNew = memberFilter !== "all" ? memberFilter : undefined;
+
   return (
     <>
       <PageHeader
         title="Allergies"
         description="Known allergies across your families, ranked by severity."
+        actions={
+          <Button onClick={() => setRegisterOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New allergy
+          </Button>
+        }
       />
 
       <div className="mb-6 flex flex-wrap gap-3">
@@ -125,7 +137,7 @@ function AllergiesPageInner() {
           <p className="text-body text-muted-foreground max-w-sm">
             {familyFilter !== "all" || memberFilter !== "all" || severityFilter !== "all"
               ? "Try clearing the filters to see all allergies."
-              : "Register an allergy from a member's profile to start tracking."}
+              : 'Click "New allergy" above to start tracking.'}
           </p>
         </div>
       )}
@@ -133,6 +145,12 @@ function AllergiesPageInner() {
       {!isLoading && !isError && filteredAllergies.length > 0 && (
         <AllergiesTable allergies={filteredAllergies} />
       )}
+
+      <RegisterAllergyForMemberDialog
+        open={registerOpen}
+        onOpenChange={setRegisterOpen}
+        defaultMemberId={defaultMemberForNew}
+      />
     </>
   );
 }

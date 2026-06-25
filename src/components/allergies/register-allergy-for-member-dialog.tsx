@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ShieldAlert } from "lucide-react";
-import { useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { MemberSelector } from "@/components/shared/member-selector";
 import { useRegisterAllergy } from "@/hooks/use-allergies";
+import { useAllMembers } from "@/hooks/use-all-members";
 import { ApiError } from "@/lib/api/client";
 import { registerAllergySchema, type RegisterAllergyInput } from "@/lib/schemas/allergy";
 import { ALLERGY_SEVERITY_LABELS } from "@/types/allergies";
@@ -36,24 +38,51 @@ import { ALLERGY_SEVERITY_LABELS } from "@/types/allergies";
 interface RegisterAllergyForMemberDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  memberId: string;
-  memberName: string;
+  memberId?: string;
+  memberName?: string;
+  defaultMemberId?: string;
 }
 
-export function RegisterAllergyForMemberDialog({
-  open,
+/**
+ * Outer wrapper: owns the Dialog open/close state. Uses `open` as a key
+ * on the inner form so React remounts (and re-initializes) the form on
+ * each open. Same pattern as RegisterExamForMemberDialog.
+ */
+export function RegisterAllergyForMemberDialog(props: RegisterAllergyForMemberDialogProps) {
+  return (
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        {props.open && <RegisterAllergyForm key={String(props.open)} {...props} />}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function RegisterAllergyForm({
   onOpenChange,
   memberId,
   memberName,
+  defaultMemberId,
 }: RegisterAllergyForMemberDialogProps) {
-  const register = useRegisterAllergy(memberId);
+  const isMemberFixed = Boolean(memberId);
+  const { members } = useAllMembers();
+
+  const [selectedMemberId, setSelectedMemberId] = useState<string>(
+    memberId ?? defaultMemberId ?? ""
+  );
+
+  const effectiveMemberId = memberId ?? selectedMemberId;
+  const effectiveMemberName = isMemberFixed
+    ? (memberName ?? "this member")
+    : (members.find((m) => m.memberId === effectiveMemberId)?.memberName ?? "—");
+
+  const register = useRegisterAllergy(effectiveMemberId);
 
   const {
     register: registerField,
     handleSubmit,
     setValue,
     watch,
-    reset,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<RegisterAllergyInput>({
@@ -66,22 +95,15 @@ export function RegisterAllergyForMemberDialog({
     },
   });
 
-  useEffect(() => {
-    if (open) {
-      reset({
-        substance: "",
-        severity: 1,
-        reaction: "",
-        firstObservedAt: "",
-      });
-    }
-  }, [open, reset]);
-
   const severity = watch("severity");
 
   const onSubmit = async (data: RegisterAllergyInput) => {
+    if (!effectiveMemberId) {
+      setError("root", { message: "Please pick a member first." });
+      return;
+    }
+
     try {
-      // Strip empty strings so backend receives proper nulls for optional fields.
       const payload = {
         substance: data.substance,
         severity: data.severity,
@@ -89,7 +111,7 @@ export function RegisterAllergyForMemberDialog({
         firstObservedAt: data.firstObservedAt?.trim() || undefined,
       };
       await register.mutateAsync(payload as RegisterAllergyInput);
-      toast.success(`Allergy registered for ${memberName}.`);
+      toast.success(`Allergy registered for ${effectiveMemberName}.`);
       onOpenChange(false);
     } catch (error) {
       if (error instanceof ApiError && error.problem.errors) {
@@ -108,114 +130,116 @@ export function RegisterAllergyForMemberDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
-          <DialogHeader className="space-y-2">
-            <DialogTitle className="text-h3 flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5" />
-              Register allergy for {memberName}
-            </DialogTitle>
-            <DialogDescription className="text-body">
-              Record a known allergy. Severity can be updated later as reactions are observed.
-            </DialogDescription>
-          </DialogHeader>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
+      <DialogHeader className="space-y-2">
+        <DialogTitle className="text-h3 flex items-center gap-2">
+          <ShieldAlert className="h-5 w-5" />
+          {isMemberFixed ? `Register allergy for ${memberName}` : "Register allergy"}
+        </DialogTitle>
+        <DialogDescription className="text-body">
+          Record a known allergy. Severity can be updated later as reactions are observed.
+        </DialogDescription>
+      </DialogHeader>
 
-          <FormSection>
-            <FormField
-              htmlFor="substance"
-              label="Substance"
-              hint="What triggers the allergy (e.g. peanuts, penicillin)."
-              error={errors.substance?.message}
-              required
+      <FormSection>
+        {!isMemberFixed && (
+          <FormField htmlFor="memberId" label="For" required>
+            <MemberSelector
+              id="memberId"
+              value={selectedMemberId}
+              onChange={setSelectedMemberId}
+              placeholder="Select a member"
+            />
+          </FormField>
+        )}
+
+        <FormField
+          htmlFor="substance"
+          label="Substance"
+          hint="What triggers the allergy (e.g. peanuts, penicillin)."
+          error={errors.substance?.message}
+          required
+        >
+          <Input
+            id="substance"
+            placeholder="Peanuts"
+            className="h-11"
+            {...registerField("substance")}
+            aria-invalid={!!errors.substance}
+          />
+        </FormField>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormField htmlFor="severity" label="Severity" error={errors.severity?.message} required>
+            <Select
+              value={String(severity)}
+              onValueChange={(val) =>
+                setValue("severity", Number(val) as RegisterAllergyInput["severity"], {
+                  shouldDirty: true,
+                })
+              }
             >
-              <Input
-                id="substance"
-                placeholder="Peanuts"
-                className="h-11"
-                {...registerField("substance")}
-                aria-invalid={!!errors.substance}
-              />
-            </FormField>
+              <SelectTrigger id="severity" className="h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(ALLERGY_SEVERITY_LABELS).map(([val, label]) => (
+                  <SelectItem key={val} value={val}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-              <FormField
-                htmlFor="severity"
-                label="Severity"
-                error={errors.severity?.message}
-                required
-              >
-                <Select
-                  value={String(severity)}
-                  onValueChange={(val) =>
-                    setValue("severity", Number(val) as RegisterAllergyInput["severity"], {
-                      shouldDirty: true,
-                    })
-                  }
-                >
-                  <SelectTrigger id="severity" className="h-11">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ALLERGY_SEVERITY_LABELS).map(([val, label]) => (
-                      <SelectItem key={val} value={val}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormField>
+          <FormField
+            htmlFor="firstObservedAt"
+            label="First observed"
+            badge="Optional"
+            error={errors.firstObservedAt?.message}
+          >
+            <Input
+              id="firstObservedAt"
+              type="date"
+              className="h-11"
+              {...registerField("firstObservedAt")}
+              aria-invalid={!!errors.firstObservedAt}
+            />
+          </FormField>
+        </div>
 
-              <FormField
-                htmlFor="firstObservedAt"
-                label="First observed"
-                badge="Optional"
-                error={errors.firstObservedAt?.message}
-              >
-                <Input
-                  id="firstObservedAt"
-                  type="date"
-                  className="h-11"
-                  {...registerField("firstObservedAt")}
-                  aria-invalid={!!errors.firstObservedAt}
-                />
-              </FormField>
-            </div>
+        <FormField
+          htmlFor="reaction"
+          label="Reaction"
+          badge="Optional"
+          hint="Describe symptoms (hives, swelling, anaphylaxis...)."
+          error={errors.reaction?.message}
+        >
+          <Textarea
+            id="reaction"
+            rows={3}
+            placeholder="Hives, difficulty breathing..."
+            {...registerField("reaction")}
+            aria-invalid={!!errors.reaction}
+          />
+        </FormField>
 
-            <FormField
-              htmlFor="reaction"
-              label="Reaction"
-              badge="Optional"
-              hint="Describe symptoms (hives, swelling, anaphylaxis...)."
-              error={errors.reaction?.message}
-            >
-              <Textarea
-                id="reaction"
-                rows={3}
-                placeholder="Hives, difficulty breathing..."
-                {...registerField("reaction")}
-                aria-invalid={!!errors.reaction}
-              />
-            </FormField>
+        <FormRootError message={errors.root?.message} />
+      </FormSection>
 
-            <FormRootError message={errors.root?.message} />
-          </FormSection>
-
-          <FormFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Registering..." : "Register allergy"}
-            </Button>
-          </FormFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <FormFooter>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => onOpenChange(false)}
+          disabled={isSubmitting}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isSubmitting || (!isMemberFixed && !effectiveMemberId)}>
+          {isSubmitting ? "Registering..." : "Register allergy"}
+        </Button>
+      </FormFooter>
+    </form>
   );
 }

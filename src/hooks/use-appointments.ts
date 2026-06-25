@@ -78,7 +78,13 @@ export function useAllAppointments() {
   const isLoading =
     familyDetails.some((q) => q.isLoading) || appointmentQueries.some((q) => q.isLoading);
 
-  const isError = familyDetails.some((q) => q.isError) || appointmentQueries.some((q) => q.isError);
+  // Only family-level failures are treated as fatal here. Per-member 403s
+  // are expected behavior (privacy rules, role-based authorization, member
+  // removed mid-session) and should silently exclude that member's data
+  // from the aggregated list instead of breaking the whole page.
+  // Phase 2D will surface a "N members inaccessible" hint when privacy
+  // rules UI lands.
+  const isError = familyDetails.some((q) => q.isError);
 
   const appointments = useMemo(() => {
     const all: EnrichedAppointment[] = [];
