@@ -1,13 +1,15 @@
 "use client";
 
 import {
+  Activity,
+  Crown,
+  FlaskConical,
   MoreHorizontal,
   Pencil,
-  FlaskConical,
   ShieldAlert,
-  UserMinus,
   ShieldCheck,
-  Crown,
+  Syringe,
+  UserMinus,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,8 +46,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EditMemberDialog } from "./edit-member-dialog";
-import { RegisterExamForMemberDialog } from "@/components/exams/register-exam-for-member-dialog";
 import { RegisterAllergyForMemberDialog } from "@/components/allergies/register-allergy-for-member-dialog";
+import { RegisterChronicConditionForMemberDialog } from "@/components/conditions/register-condition-for-member-dialog";
+import { RegisterExamForMemberDialog } from "@/components/exams/register-exam-for-member-dialog";
+import { RegisterVaccineForMemberDialog } from "@/components/vaccines/register-vaccine-for-member-dialog";
 import { useChangeMemberRole, useRemoveMember, useTransferOwnership } from "@/hooks/use-families";
 import { useMe } from "@/hooks/use-me";
 import { ApiError } from "@/lib/api/client";
@@ -101,6 +105,8 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
   const [editOpen, setEditOpen] = useState(false);
   const [registerExamOpen, setRegisterExamOpen] = useState(false);
   const [registerAllergyOpen, setRegisterAllergyOpen] = useState(false);
+  const [registerVaccineOpen, setRegisterVaccineOpen] = useState(false);
+  const [registerConditionOpen, setRegisterConditionOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
 
@@ -203,6 +209,14 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
                     <ShieldAlert className="mr-2 h-4 w-4" />
                     Register allergy
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setRegisterVaccineOpen(true)}>
+                    <Syringe className="mr-2 h-4 w-4" />
+                    Register vaccine
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setRegisterConditionOpen(true)}>
+                    <Activity className="mr-2 h-4 w-4" />
+                    Register condition
+                  </DropdownMenuItem>
                 </>
               )}
 
@@ -268,6 +282,20 @@ function MemberRow({ familyId, member, canManage, isOwner, isMe }: MemberRowProp
         <RegisterAllergyForMemberDialog
           open={registerAllergyOpen}
           onOpenChange={setRegisterAllergyOpen}
+          memberId={member.id}
+          memberName={member.displayName}
+        />
+
+        <RegisterVaccineForMemberDialog
+          open={registerVaccineOpen}
+          onOpenChange={setRegisterVaccineOpen}
+          memberId={member.id}
+          memberName={member.displayName}
+        />
+
+        <RegisterChronicConditionForMemberDialog
+          open={registerConditionOpen}
+          onOpenChange={setRegisterConditionOpen}
           memberId={member.id}
           memberName={member.displayName}
         />
