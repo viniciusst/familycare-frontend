@@ -42,3 +42,32 @@ export const changeAllergySeveritySchema = z.object({
 });
 
 export type ChangeAllergySeverityInput = z.infer<typeof changeAllergySeveritySchema>;
+
+/**
+ * Schema for updating allergy details. Full-replacement semantics:
+ * the client sends the complete state, nullable fields passed as null
+ * (or empty string at the form level) are cleared. Severity is not
+ * editable here — use changeAllergySeveritySchema.
+ */
+export const updateAllergyDetailsSchema = z.object({
+  newSubstance: z
+    .string()
+    .min(1, "Substance is required.")
+    .max(120, "Substance must be 120 characters or fewer.")
+    .trim(),
+  newReaction: z
+    .string()
+    .max(500, "Reaction must be 500 characters or fewer.")
+    .trim()
+    .optional()
+    .or(z.literal("")),
+  newFirstObservedAt: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || !Number.isNaN(new Date(val).getTime()),
+      "First observed date must be a valid date."
+    ),
+});
+
+export type UpdateAllergyDetailsInput = z.infer<typeof updateAllergyDetailsSchema>;

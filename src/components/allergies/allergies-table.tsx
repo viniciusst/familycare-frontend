@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreHorizontal, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, AlertTriangle, Pencil, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { ChangeSeverityDialog } from "./change-severity-dialog";
 import { SeverityBadge } from "./severity-badge";
+import { UpdateAllergyDetailsDialog } from "./update-allergy-details-dialog";
 import type { EnrichedAllergy } from "@/types/allergies";
 
 interface AllergiesTableProps {
@@ -51,7 +53,8 @@ export function AllergiesTable({ allergies }: AllergiesTableProps) {
 }
 
 function AllergyRow({ allergy }: { allergy: EnrichedAllergy }) {
-  const [changeOpen, setChangeOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [changeSeverityOpen, setChangeSeverityOpen] = useState(false);
 
   return (
     <TableRow>
@@ -99,11 +102,24 @@ function AllergyRow({ allergy }: { allergy: EnrichedAllergy }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setChangeOpen(true)}>Change severity</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit details
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setChangeSeverityOpen(true)}>
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Change severity
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <ChangeSeverityDialog open={changeOpen} onOpenChange={setChangeOpen} allergy={allergy} />
+        <UpdateAllergyDetailsDialog open={editOpen} onOpenChange={setEditOpen} allergy={allergy} />
+        <ChangeSeverityDialog
+          open={changeSeverityOpen}
+          onOpenChange={setChangeSeverityOpen}
+          allergy={allergy}
+        />
       </TableCell>
     </TableRow>
   );

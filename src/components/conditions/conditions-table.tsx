@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MoreHorizontal } from "lucide-react";
+import { Check, MoreHorizontal, Pencil } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -30,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UpdateChronicConditionDetailsDialog } from "./update-condition-details-dialog";
 import { useResolveChronicCondition } from "@/hooks/use-chronic-conditions";
 import { ApiError } from "@/lib/api/client";
 import type { EnrichedChronicCondition } from "@/types/chronic-conditions";
@@ -63,6 +65,7 @@ export function ChronicConditionsTable({ conditions }: ChronicConditionsTablePro
 }
 
 function ConditionRow({ condition }: { condition: EnrichedChronicCondition }) {
+  const [editOpen, setEditOpen] = useState(false);
   const [resolveOpen, setResolveOpen] = useState(false);
   const resolve = useResolveChronicCondition();
 
@@ -110,21 +113,34 @@ function ConditionRow({ condition }: { condition: EnrichedChronicCondition }) {
         )}
       </TableCell>
       <TableCell>
-        {condition.isActive && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setResolveOpen(true)}>
-                <Check className="mr-2 h-4 w-4" />
-                Mark as resolved
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit details
+            </DropdownMenuItem>
+            {condition.isActive && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setResolveOpen(true)}>
+                  <Check className="mr-2 h-4 w-4" />
+                  Mark as resolved
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <UpdateChronicConditionDetailsDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          condition={condition}
+        />
 
         <AlertDialog open={resolveOpen} onOpenChange={setResolveOpen}>
           <AlertDialogContent>
