@@ -1,8 +1,16 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, MoreHorizontal, Pencil } from "lucide-react";
+import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -11,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UpdateVaccineDetailsDialog } from "./update-vaccine-details-dialog";
 import { isNextDoseOverdue, type EnrichedVaccine } from "@/types/vaccines";
 
 interface VaccinesTableProps {
@@ -29,6 +38,7 @@ export function VaccinesTable({ vaccines }: VaccinesTableProps) {
             <TableHead>Dose</TableHead>
             <TableHead>Manufacturer</TableHead>
             <TableHead>Next dose</TableHead>
+            <TableHead className="w-12"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -42,6 +52,7 @@ export function VaccinesTable({ vaccines }: VaccinesTableProps) {
 }
 
 function VaccineRow({ vaccine }: { vaccine: EnrichedVaccine }) {
+  const [editOpen, setEditOpen] = useState(false);
   const overdue = isNextDoseOverdue(vaccine);
 
   return (
@@ -92,6 +103,23 @@ function VaccineRow({ vaccine }: { vaccine: EnrichedVaccine }) {
         ) : (
           <span className="text-muted-foreground/60">—</span>
         )}
+      </TableCell>
+      <TableCell>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit details
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <UpdateVaccineDetailsDialog open={editOpen} onOpenChange={setEditOpen} vaccine={vaccine} />
       </TableCell>
     </TableRow>
   );
