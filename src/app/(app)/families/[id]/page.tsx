@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Settings, Users } from "lucide-react";
+import { ArrowLeft, Settings, Shield, Users } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { FamilySettings } from "@/components/families/family-settings";
 import { InviteMemberDialog } from "@/components/families/invite-member-dialog";
 import { MembersTable } from "@/components/families/members-table";
 import { PageHeader } from "@/components/layout/page-layout";
+import { PrivacyTab } from "@/components/privacy/privacy-tab";
 import { useFamily } from "@/hooks/use-families";
 import { useMyRole } from "@/hooks/use-my-role";
 import { ROLE_LABELS } from "@/types/api";
@@ -77,6 +78,10 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
               <Users className="h-4 w-4" />
               Members
             </TabsTrigger>
+            <TabsTrigger value="privacy" className={tabTriggerClass}>
+              <Shield className="h-4 w-4" />
+              Privacy
+            </TabsTrigger>
             {canManage && (
               <TabsTrigger value="settings" className={tabTriggerClass}>
                 <Settings className="h-4 w-4" />
@@ -88,6 +93,10 @@ export default function FamilyDetailPage({ params }: { params: Promise<{ id: str
 
         <TabsContent value="members" className="mt-6 w-full">
           <MembersTable familyId={family.id} members={family.members} myRole={myRole} />
+        </TabsContent>
+
+        <TabsContent value="privacy" className="mt-6 w-full">
+          <PrivacyTab family={family} />
         </TabsContent>
 
         {canManage && (
